@@ -132,11 +132,11 @@ export const Footer: React.FC = () => {
                   </div>
                   <div className='flex items-center text-luxury-gray-400 text-sm'>
                     <Phone className='h-4 w-4 mr-3 text-luxury-red' />
-                    +33 1 23 45 67 89
+                    +596 1 23 45 67 89
                   </div>
                   <div className='flex items-center text-luxury-gray-400 text-sm'>
                     <MapPin className='h-4 w-4 mr-3 text-luxury-red' />
-                    Paris, France
+                    Fort-de-france, Martinique
                   </div>
                 </div>
               </motion.div>
