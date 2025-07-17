@@ -68,6 +68,7 @@ export const Footer: React.FC = () => {
       url: '#',
       color: 'hover:text-blue-400'
     },
+    /*
     {
       name: 'Twitter',
       icon: <Twitter className='w-5 h-5' />,
@@ -79,7 +80,7 @@ export const Footer: React.FC = () => {
       icon: <Youtube className='w-5 h-5' />,
       url: '#',
       color: 'hover:text-red-400'
-    }
+    }*/
   ]
 
   const paymentMethods = [
