@@ -42,7 +42,7 @@ export default {
         }
       },
       fontFamily: {
-        'display': ['Inter', 'system-ui', 'sans-serif'],
+        'display': ['Playfair Display', 'serif'],
         'body': ['Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {

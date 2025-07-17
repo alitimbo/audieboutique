@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShoppingBagIcon, UserIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingBag, User, Search, Menu, X } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useAuthStore } from '../../store/useAuthStore';
 
@@ -10,12 +10,14 @@ export const Header: React.FC = () => {
   const { toggleCart, getTotalItems } = useCartStore();
   const { user } = useAuthStore();
   const totalItems = getTotalItems();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigationItems = [
     { name: 'Accueil', path: '/' },
     { name: 'Boutique', path: '/shop' },
-    { name: 'Collections', path: '/collections' },
-    { name: 'À propos', path: '/about' },
+    { name: 'Nouveautés', path: '/nouveautes' },
+    { name: 'Soldes', path: '/soldes' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   return (
@@ -26,24 +28,21 @@ export const Header: React.FC = () => {
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             <Link to="/" className="flex items-center">
-              <div className="bg-luxury-red w-8 h-8 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-luxury-white font-bold text-lg">L</span>
-              </div>
-              <span className="text-luxury-white font-display font-bold text-xl">
-                LuxStore
+              <span className="text-luxury-white font-display font-bold text-2xl lg:text-3xl tracking-wide">
+                Audie Boutique
               </span>
             </Link>
           </motion.div>
 
           {/* Navigation Desktop */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden lg:flex space-x-8">
             {navigationItems.map((item) => (
               <motion.div
                 key={item.name}
@@ -52,7 +51,7 @@ export const Header: React.FC = () => {
               >
                 <Link
                   to={item.path}
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                  className={`relative px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                     location.pathname === item.path
                       ? 'text-luxury-red'
                       : 'text-luxury-white hover:text-luxury-red'
@@ -81,7 +80,7 @@ export const Header: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               className="p-2 text-luxury-white hover:text-luxury-red transition-colors duration-200"
             >
-              <MagnifyingGlassIcon className="h-5 w-5" />
+              <Search className="h-5 w-5" />
             </motion.button>
 
             {/* User Account */}
@@ -93,7 +92,7 @@ export const Header: React.FC = () => {
                 to={user ? '/account' : '/auth'}
                 className="p-2 text-luxury-white hover:text-luxury-red transition-colors duration-200"
               >
-                <UserIcon className="h-5 w-5" />
+                <User className="h-5 w-5" />
               </Link>
             </motion.div>
 
@@ -104,7 +103,7 @@ export const Header: React.FC = () => {
               onClick={toggleCart}
               className="relative p-2 text-luxury-white hover:text-luxury-red transition-colors duration-200"
             >
-              <ShoppingBagIcon className="h-5 w-5" />
+              <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
@@ -115,8 +114,48 @@ export const Header: React.FC = () => {
                 </motion.span>
               )}
             </motion.button>
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden p-2 text-luxury-white hover:text-luxury-red transition-colors duration-200"
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </motion.button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="lg:hidden border-t border-luxury-gray-800"
+            >
+              <nav className="py-4 space-y-2">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`block px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                      location.pathname === item.path
+                        ? 'text-luxury-red bg-luxury-gray-900'
+                        : 'text-luxury-white hover:text-luxury-red hover:bg-luxury-gray-900'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );
