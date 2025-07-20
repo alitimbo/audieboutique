@@ -12,7 +12,7 @@ interface SEOProps {
 
 export const SEO: React.FC<SEOProps> = ({
   title,
-  description = 'LuxStore - Boutique en ligne premium avec design luxueux et produits exclusifs',
+  description = 'Audie Boutique - Boutique en ligne premium avec design luxueux et produits exclusifs',
   keywords = 'luxe, premium, boutique, e-commerce, mode, design',
   image = '/og-image.jpg',
   url = window.location.href,
@@ -26,7 +26,7 @@ export const SEO: React.FC<SEOProps> = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      <meta name="author" content="LuxStore" />
+      <meta name="author" content="Audie Boutique" />
       <meta name="robots" content="index, follow" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       
