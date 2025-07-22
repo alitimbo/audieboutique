@@ -20,10 +20,10 @@ export const Footer: React.FC = () => {
     {
       title: 'Boutique',
       links: [
-        { name: 'Nouveautés', path: '/nouveautes' },
-        { name: 'Soldes', path: '/soldes' },
-        { name: 'Collections', path: '/collections' },
-        { name: 'Exclusivités', path: '/exclusivites' }
+        { name: 'Nouveautés', path: '/shop/tags/nouveautes' },
+        { name: 'Soldes', path: '/shop/tags/soldes' },
+        { name: 'Collections', path: '/shop/tags/collections' },
+        { name: 'Exclusivités', path: '/shop/tags/exclusivites' }
       ]
     },
     {
@@ -31,17 +31,17 @@ export const Footer: React.FC = () => {
       links: [
         { name: 'Aide & Support', path: '/support' },
         { name: 'Livraison & Retours', path: '/livraison' },
-        { name: 'Guide des tailles', path: '/guide-tailles' },
+        { name: 'Guide des tailles', path: '/size-guide' },
         { name: 'FAQ', path: '/faq' }
       ]
     },
     {
       title: 'À propos',
       links: [
-        { name: 'Notre histoire', path: '/about' },
-        { name: 'Engagement qualité', path: '/qualite' },
-        { name: 'Carrières', path: '/carrieres' },
-        { name: 'Presse', path: '/presse' }
+        { name: 'Notre histoire', path: '/our-story' },
+        { name: 'Engagement qualité', path: '/quality' },
+        { name: 'Carrières', path: '/careers' },
+        { name: 'Presse', path: '/press' }
       ]
     },
     {
@@ -67,7 +67,7 @@ export const Footer: React.FC = () => {
       icon: <Facebook className='w-5 h-5' />,
       url: '#',
       color: 'hover:text-blue-400'
-    },
+    }
     /*
     {
       name: 'Twitter',

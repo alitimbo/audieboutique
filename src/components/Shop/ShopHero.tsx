@@ -4,7 +4,7 @@ import { Sparkles, Heart, Crown } from 'lucide-react';
 
 export const ShopHero: React.FC = () => {
   return (
-    <section className="pt-5 relative h-120 overflow-hidden bg-gradient-to-br from-luxury-black via-luxury-gray-900 to-luxury-black">
+    <section className="pt-10 relative h-100 overflow-hidden bg-gradient-to-br from-luxury-black via-luxury-gray-900 to-luxury-black">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img

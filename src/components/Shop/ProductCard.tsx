@@ -210,7 +210,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           }`}
         >
           <ShoppingCart className="w-4 h-4" />
-          <span>{product.inStock ? 'Ajouter au panier' : 'Rupture de stock'}</span>
+          <span className='text-xs'>{product.inStock ? 'Ajouter au panier' : 'Rupture de stock'}</span>
         </motion.button>
       </div>
     </motion.div>

@@ -16,8 +16,8 @@ export const Header: React.FC = () => {
   const navigationItems = [
     { name: 'Accueil', path: '/' },
     { name: 'Boutique', path: '/shop' },
-    { name: 'Nouveautés', path: '/nouveautes' },
-    { name: 'Soldes', path: '/soldes' },
+    { name: 'Nouveautés', path: '/shop/tags/nouveautes' },
+    { name: 'Soldes', path: '/shop/tags/soldes' },
     { name: 'Contact', path: '/contact' }
   ]
 
@@ -109,19 +109,23 @@ export const Header: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={toggleCart}
+              onClick={() => {
+                toggleCart()
+              }}
               className='relative p-2 text-luxury-white hover:text-luxury-red transition-colors duration-200'
             >
-              <ShoppingBag className='h-5 w-5' />
-              {totalItems > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className='absolute -top-1 -right-1 bg-luxury-red text-luxury-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium'
-                >
-                  {totalItems}
-                </motion.span>
-              )}
+              <Link to='/cart' className='flex items-center'>
+                <ShoppingBag className='h-5 w-5' />
+                {totalItems > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className='absolute -top-1 -right-1 bg-luxury-red text-luxury-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium'
+                  >
+                    {totalItems}
+                  </motion.span>
+                )}
+              </Link>
             </motion.button>
 
             {/* Mobile Menu Button */}

@@ -198,7 +198,7 @@ export const ProductGrid: React.FC = () => {
                   className="w-full bg-luxury-red text-luxury-white py-3 rounded-2xl font-medium hover:bg-red-700 transition-colors duration-200 flex items-center justify-center space-x-2"
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  <span>Ajouter au panier</span>
+                  <span className='text-xs'>Ajouter au panier</span>
                 </motion.button>
               </div>
             </motion.div>
