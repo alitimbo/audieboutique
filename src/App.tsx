@@ -20,6 +20,13 @@ import { Quality } from './pages/Quality'
 import { OurStory } from './pages/OurStory'
 import { Careers } from './pages/Careers'
 import { Press } from './pages/Press'
+import { Support } from './pages/Support'
+import ReturnPolicy from './pages/ReturnPolicy'
+import CookieBanner from './components/ui/CookieBanner'
+import CGV from './pages/CGV'
+import MentionsLegales from './pages/MentionsLegales'
+import Confidentialite from './pages/Confidentialite'
+import CookiesPage from './pages/Cookies'
 
 // Stores
 import { useAuthStore } from './store/useAuthStore'
@@ -68,12 +75,21 @@ function App () {
                 <Route path='/our-story' element={<OurStory />} />
                 <Route path='/careers' element={<Careers />} />
                 <Route path='/press' element={<Press />} />
+                <Route path='/support' element={<Support />} />
+                <Route path='/retour' element={<ReturnPolicy />} />
+                <Route path='/cgv' element={<CGV />} />
+                <Route path='/mentions-legales' element={<MentionsLegales />} />
+                <Route path='/confidentialite' element={<Confidentialite />} />
+                <Route path='/cookies' element={<CookiesPage />} />
                 <Route path='/shop/tags/:collections' element={<Shop />} />
               </Routes>
             </motion.main>
           </AnimatePresence>
 
           <Footer />
+
+          {/* Cookie Consent Banner */}
+          <CookieBanner />
 
           {/* Toast Notifications */}
           <Toaster

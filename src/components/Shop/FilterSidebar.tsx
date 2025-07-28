@@ -7,6 +7,8 @@ interface FilterSidebarProps {
   onClose: () => void;
   filters: ShopFilters;
   onFiltersChange: (filters: ShopFilters) => void;
+  selectedTag?: string;
+  onTagChange?: (tag?: string) => void;
 }
 
 export interface ShopFilters {
@@ -41,22 +43,31 @@ const colors = [
 ];
 
 const availabilityOptions = [
-  'Nouveautés',
   'En promotion',
   'En stock'
+];
+
+const tags = [
+  { label: 'Nouveautés', value: 'nouveautes' },
+  { label: 'Soldes', value: 'soldes' },
+  { label: 'Collections', value: 'collections' },
+  { label: 'Exclusivités', value: 'exclusivites' }
 ];
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   isOpen,
   onClose,
   filters,
-  onFiltersChange
+  onFiltersChange,
+  selectedTag,
+  onTagChange
 }) => {
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
     price: true,
     colors: true,
-    availability: true
+    availability: true,
+    tags: true
   });
 
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -121,6 +132,50 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           >
             Tout effacer
           </button>
+        </div>
+
+        {/* Tags */}
+        <div className="mb-8">
+          <button
+            onClick={() => toggleSection('tags')}
+            className="flex items-center justify-between w-full mb-4"
+          >
+            <h3 className="text-lg font-semibold text-luxury-black">Tags</h3>
+            {expandedSections.tags ? (
+              <ChevronUp className="w-4 h-4 text-luxury-gray-600" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-luxury-gray-600" />
+            )}
+          </button>
+          <AnimatePresence>
+            {expandedSections.tags && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-3"
+              >
+                {tags.map(tag => (
+                  <label
+                    key={tag.value}
+                    className="flex items-center space-x-3 cursor-pointer group"
+                  >
+                    <input
+                      type="radio"
+                      name="tag"
+                      checked={selectedTag === tag.value}
+                      onChange={() => onTagChange && onTagChange(selectedTag === tag.value ? undefined : tag.value)}
+                      className="w-4 h-4 text-luxury-red border-luxury-gray-300 rounded focus:ring-luxury-red focus:ring-2"
+                    />
+                    <span className="text-luxury-gray-700 group-hover:text-luxury-black transition-colors duration-200">
+                      {tag.label}
+                    </span>
+                  </label>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Categories */}

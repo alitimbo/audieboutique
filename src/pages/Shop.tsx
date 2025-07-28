@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Grid, List } from 'lucide-react';
 import { SEO } from '../components/ui/SEO';
@@ -9,6 +9,8 @@ import { SortDropdown } from '../components/Shop/SortDropdown';
 import { Pagination } from '../components/Shop/Pagination';
 import { Product } from '../components/Shop/ProductCard';
 import { useCartStore } from '../store/useCartStore';
+import { useNavigate, useParams } from 'react-router-dom';
+
 
 // Mock data pour les produits
 const mockProducts: Product[] = [
@@ -138,6 +140,25 @@ export const Shop: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   
   const { addItem } = useCartStore();
+  const navigate = useNavigate();
+  const { collections: tagParam } = useParams();
+  const gridRef = useRef<HTMLDivElement | null>(null);
+
+  // Synchronise le filtre tag avec l'URL
+  useEffect(() => {
+    if (tagParam) {
+      // Optionnel : tu peux filtrer les produits ici selon le tag si besoin
+    }
+  }, [tagParam]);
+
+  // Callback pour changer de tag (naviguer)
+  const handleTagChange = (tag?: string) => {
+    if (tag) {
+      navigate(`/shop/tags/${tag}`);
+    } else {
+      navigate('/shop');
+    }
+  };
 
   // Simulate loading
   useEffect(() => {
@@ -145,9 +166,38 @@ export const Shop: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Scroll au début de la grille lors d'un changement de filtre, tag ou page
+  useEffect(() => {
+    if (gridRef.current) {
+      const yOffset = -80; // hauteur du header à ajuster si besoin
+      const y = gridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, [filters, tagParam, currentPage]);
+
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     let filtered = [...mockProducts];
+
+    // Filtrage par tag
+    if (tagParam) {
+      switch (tagParam) {
+        case 'soldes':
+          filtered = filtered.filter(product => product.isOnSale);
+          break;
+        case 'nouveautes':
+          filtered = filtered.filter(product => product.isNew);
+          break;
+        case 'exclusivites':
+          // Si tu veux une logique spéciale, adapte ici (ex: category === 'Exclusivités')
+          filtered = filtered.filter(product => product.category === 'Exclusivités');
+          break;
+        case 'collections':
+        default:
+          // Pas de filtre supplémentaire pour 'collections'
+          break;
+      }
+    }
 
     // Filter by categories
     if (filters.categories.length > 0) {
@@ -203,7 +253,7 @@ export const Shop: React.FC = () => {
     }
 
     return filtered;
-  }, [filters]);
+  }, [filters, tagParam]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -262,6 +312,8 @@ export const Shop: React.FC = () => {
               onClose={() => setIsFilterOpen(false)}
               filters={filters}
               onFiltersChange={setFilters}
+              selectedTag={tagParam}
+              onTagChange={handleTagChange}
             />
 
             {/* Main Content */}
@@ -324,6 +376,7 @@ export const Shop: React.FC = () => {
               </motion.div>
 
               {/* Products Grid */}
+              <div ref={gridRef} />
               <ProductGrid
                 products={paginatedProducts}
                 loading={loading}

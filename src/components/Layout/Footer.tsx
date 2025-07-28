@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Mail,
@@ -16,6 +16,8 @@ import {
 import Logo from '../../images/logo_blanc.png'
 
 export const Footer: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const footerSections = [
     {
       title: 'Boutique',
@@ -32,7 +34,8 @@ export const Footer: React.FC = () => {
         { name: 'Aide & Support', path: '/support' },
         { name: 'Livraison & Retours', path: '/livraison' },
         { name: 'Guide des tailles', path: '/size-guide' },
-        { name: 'FAQ', path: '/faq' }
+        { name: 'FAQ', path: '/support#faq' },
+        { name: 'Politique de retour', path: '/retour' }
       ]
     },
     {
@@ -143,12 +146,12 @@ export const Footer: React.FC = () => {
             </div>
 
             {/* Footer Links */}
-            {footerSections.map((section, index) => (
+            {footerSections.map((section, idx) => (
               <motion.div
                 key={section.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
               >
                 <h3 className='text-luxury-white font-semibold mb-4'>
                   {section.title}
@@ -156,12 +159,27 @@ export const Footer: React.FC = () => {
                 <ul className='space-y-2'>
                   {section.links.map(link => (
                     <li key={link.name}>
-                      <Link
-                        to={link.path}
-                        className='text-luxury-gray-400 hover:text-luxury-red transition-colors duration-200 text-sm'
-                      >
-                        {link.name}
-                      </Link>
+                      {link.name === 'FAQ' ? (
+                        <a
+                          href='/support#faq'
+                          onClick={e => {
+                            if (location.pathname === '/support') {
+                              e.preventDefault();
+                              window.dispatchEvent(new CustomEvent('scrollToFaq'));
+                            }
+                          }}
+                          className='text-luxury-gray-400 hover:text-luxury-red transition-colors duration-200 text-sm'
+                        >
+                          {link.name}
+                        </a>
+                      ) : (
+                        <Link
+                          to={link.path}
+                          className='text-luxury-gray-400 hover:text-luxury-red transition-colors duration-200 text-sm'
+                        >
+                          {link.name}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
