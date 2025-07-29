@@ -1,104 +1,230 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Plus, 
   Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
-  Eye, 
+  Filter,
+  Eye,
+  Edit,
+  Trash2,
   Package,
+  Archive,
+  RotateCcw,
   Star,
-  DollarSign
+  AlertTriangle
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { Product, ProductFormData, ProductFilters, PRODUCT_CATEGORIES } from '../../types/product';
+import { ProductForm } from '../../components/admin/ProductForm';
+import { StockManager } from '../../components/admin/StockManager';
+import { ProductService } from '../../services/productService';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  stock: number;
-  category: string;
-  image: string;
-  isNew: boolean;
-  isOnSale: boolean;
-  isExclusive: boolean;
-  createdAt: string;
-}
-
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Casque Audio Premium',
-    description: 'Casque haute qualité avec réduction de bruit',
-    price: 299.99,
-    originalPrice: 399.99,
-    stock: 15,
-    category: 'Casques',
-    image: '/api/placeholder/300/300',
-    isNew: true,
-    isOnSale: true,
-    isExclusive: false,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    name: 'Écouteurs Sans Fil',
-    description: 'Écouteurs Bluetooth avec étui de charge',
-    price: 149.99,
-    stock: 32,
-    category: 'Écouteurs',
-    image: '/api/placeholder/300/300',
-    isNew: false,
-    isOnSale: false,
-    isExclusive: true,
-    createdAt: '2024-01-10'
-  },
-  {
-    id: '3',
-    name: 'Enceinte Portable',
-    description: 'Enceinte Bluetooth étanche',
-    price: 89.99,
-    stock: 8,
-    category: 'Enceintes',
-    image: '/api/placeholder/300/300',
-    isNew: false,
-    isOnSale: false,
-    isExclusive: false,
-    createdAt: '2024-01-05'
-  }
-];
+// Les données sont maintenant chargées depuis Supabase via ProductService
 
 export const AdminCatalog: React.FC = () => {
-  const [products] = useState<Product[]>(mockProducts);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-
-  const categories = ['all', 'Casques', 'Écouteurs', 'Enceintes'];
-
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<ProductFilters>({
+    search: '',
+    category: 'all',
+    status: 'all',
+    featured: null
   });
 
-  const getStockStatus = (stock: number) => {
-    if (stock === 0) return { text: 'Rupture', color: 'bg-red-100 text-red-800' };
-    if (stock < 10) return { text: 'Stock faible', color: 'bg-yellow-100 text-yellow-800' };
-    return { text: 'En stock', color: 'bg-green-100 text-green-800' };
+  // Modal states
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false);
+  const [isStockManagerOpen, setIsStockManagerOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
+
+  // Clés pour le sessionStorage
+  const FORM_STORAGE_KEY = 'admin_product_form_data';
+  const MODAL_STORAGE_KEY = 'admin_product_modal_state';
+
+  // Restaurer l'état du formulaire au chargement
+  useEffect(() => {
+    const savedModalState = sessionStorage.getItem(MODAL_STORAGE_KEY);
+    if (savedModalState) {
+      const { isOpen, mode, productId } = JSON.parse(savedModalState);
+      if (isOpen) {
+        setIsProductFormOpen(true);
+        setFormMode(mode);
+        if (mode === 'edit' && productId) {
+          // Trouver le produit à éditer
+          const productToEdit = products.find(p => p.id === productId);
+          if (productToEdit) {
+            setSelectedProduct(productToEdit);
+          }
+        }
+      }
+    }
+  }, [products]);
+
+  // Sauvegarder l'état du modal
+  const saveModalState = (isOpen: boolean, mode: 'create' | 'edit', productId?: string) => {
+    if (isOpen) {
+      sessionStorage.setItem(MODAL_STORAGE_KEY, JSON.stringify({
+        isOpen,
+        mode,
+        productId
+      }));
+    } else {
+      sessionStorage.removeItem(MODAL_STORAGE_KEY);
+      sessionStorage.removeItem(FORM_STORAGE_KEY);
+    }
+  };
+
+  // Charger les produits depuis Supabase
+  const loadProducts = async () => {
+    try {
+      console.log('🚀 Chargement des produits...');
+      setLoading(true);
+      
+      // Charger TOUS les produits sans filtres d'abord
+      const data = await ProductService.getProducts();
+      console.log('📦 Produits chargés:', data);
+      
+      setProducts(data);
+      setFilteredProducts(data);
+      
+      console.log('✅ État mis à jour avec', data.length, 'produits');
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement des produits:', error);
+      toast.error('Erreur lors du chargement des produits');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Charger les produits au montage du composant
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  // Recharger les produits quand les filtres changent
+  useEffect(() => {
+    if (!loading) {
+      loadProducts();
+    }
+  }, [filters]);
+
+  // Les filtres sont maintenant gérés par le service ProductService
+
+  // Product CRUD operations
+  const handleCreateProduct = () => {
+    setSelectedProduct(undefined);
+    setFormMode('create');
+    setIsProductFormOpen(true);
+    saveModalState(true, 'create');
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setFormMode('edit');
+    setIsProductFormOpen(true);
+    saveModalState(true, 'edit', product.id);
+  };
+
+  const handleSaveProduct = async (productData: ProductFormData) => {
+    try {
+      if (formMode === 'create') {
+        await ProductService.createProduct(productData);
+        toast.success('Produit créé avec succès');
+        await loadProducts(); // Recharger la liste
+      } else if (selectedProduct) {
+        await ProductService.updateProduct(selectedProduct.id, productData);
+        toast.success('Produit modifié avec succès');
+        await loadProducts(); // Recharger la liste
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la sauvegarde');
+      throw error;
+    }
+  };
+
+  const handleArchiveProduct = async (productId: string) => {
+    try {
+      await ProductService.toggleArchiveProduct(productId, true);
+      toast.success('Produit archivé');
+      await loadProducts(); // Recharger la liste
+    } catch (error) {
+      toast.error('Erreur lors de l\'archivage');
+    }
+  };
+
+  const handleRestoreProduct = async (productId: string) => {
+    try {
+      await ProductService.toggleArchiveProduct(productId, false);
+      toast.success('Produit restauré');
+      await loadProducts(); // Recharger la liste
+    } catch (error) {
+      toast.error('Erreur lors de la restauration');
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer définitivement ce produit ?')) {
+      try {
+        await ProductService.deleteProduct(productId);
+        toast.success('Produit supprimé');
+        await loadProducts(); // Recharger la liste
+      } catch (error) {
+        toast.error('Erreur lors de la suppression');
+      }
+    }
+  };
+
+  // Stock management
+  const handleOpenStockManager = (product: Product) => {
+    setSelectedProduct(product);
+    setIsStockManagerOpen(true);
+  };
+
+  const handleStockUpdate = async (productId: string, newStock: number) => {
+    try {
+      await ProductService.updateStock(productId, newStock);
+      toast.success('Stock mis à jour');
+      await loadProducts(); // Recharger la liste
+    } catch (error) {
+      toast.error('Erreur lors de la mise à jour du stock');
+      throw error;
+    }
+  };
+
+  const getStatusBadge = (product: Product) => {
+    if (product.archived) {
+      return <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">Archivé</span>;
+    }
+    if (!product.active) {
+      return <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-600 rounded-full">Inactif</span>;
+    }
+    if (product.stock === 0) {
+      return <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-600 rounded-full">Rupture</span>;
+    }
+    if (product.stock <= 5) {
+      return <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-600 rounded-full">Stock faible</span>;
+    }
+    return <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-600 rounded-full">En stock</span>;
+  };
+
+  const stats = {
+    total: products.length,
+    active: products.filter(p => p.active && !p.archived).length,
+    archived: products.filter(p => p.archived).length,
+    outOfStock: products.filter(p => p.stock === 0).length
   };
 
   return (
-    <div className="space-y-6">
-      {/* En-tête */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestion du catalogue</h1>
-          <p className="text-gray-600 mt-1">Gérez vos produits et votre inventaire</p>
+          <p className="text-gray-600 mt-1">Gérez vos produits, stock et prix</p>
         </div>
         <motion.button
+          onClick={handleCreateProduct}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="bg-accent-gold hover:bg-accent-gold/90 text-luxury-black font-semibold px-4 py-2 rounded-lg transition-all duration-200 inline-flex items-center shadow-lg hover:shadow-xl"
@@ -108,90 +234,101 @@ export const AdminCatalog: React.FC = () => {
         </motion.button>
       </div>
 
-      {/* Filtres et recherche */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Recherche */}
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Rechercher un produit..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
-              />
-            </div>
-          </div>
-
-          {/* Filtre par catégorie */}
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
-            >
-              <option value="all">Toutes les catégories</option>
-              {categories.slice(1).map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Statistiques rapides */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <Package className="w-8 h-8 text-blue-500" />
-            <div className="ml-3">
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
               <p className="text-sm font-medium text-gray-600">Total produits</p>
-              <p className="text-xl font-bold text-gray-900">{products.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
             </div>
+            <Package className="w-8 h-8 text-accent-gold" />
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <Star className="w-8 h-8 text-yellow-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-600">Nouveautés</p>
-              <p className="text-xl font-bold text-gray-900">
-                {products.filter(p => p.isNew).length}
-              </p>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Actifs</p>
+              <p className="text-2xl font-bold text-green-600">{stats.active}</p>
             </div>
+            <Eye className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <DollarSign className="w-8 h-8 text-green-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-600">En promotion</p>
-              <p className="text-xl font-bold text-gray-900">
-                {products.filter(p => p.isOnSale).length}
-              </p>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Archivés</p>
+              <p className="text-2xl font-bold text-gray-600">{stats.archived}</p>
             </div>
+            <Archive className="w-8 h-8 text-gray-500" />
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-          <div className="flex items-center">
-            <Package className="w-8 h-8 text-red-500" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-600">Stock faible</p>
-              <p className="text-xl font-bold text-gray-900">
-                {products.filter(p => p.stock < 10).length}
-              </p>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Rupture stock</p>
+              <p className="text-2xl font-bold text-orange-600">{stats.outOfStock}</p>
             </div>
+            <AlertTriangle className="w-8 h-8 text-orange-500" />
           </div>
         </div>
       </div>
 
-      {/* Liste des produits */}
+      {/* Filters */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Rechercher un produit..."
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
+            />
+          </div>
+
+          <select
+            value={filters.category}
+            onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
+          >
+            <option value="all">Toutes les catégories</option>
+            {PRODUCT_CATEGORIES.map(category => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+
+          <select
+            value={filters.status}
+            onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value as any }))}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="active">Actifs</option>
+            <option value="archived">Archivés</option>
+            <option value="out_of_stock">Rupture de stock</option>
+          </select>
+
+          <select
+            value={filters.featured === null ? 'all' : filters.featured.toString()}
+            onChange={(e) => setFilters(prev => ({ 
+              ...prev, 
+              featured: e.target.value === 'all' ? null : e.target.value === 'true' 
+            }))}
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
+          >
+            <option value="all">Tous les produits</option>
+            <option value="true">En vedette</option>
+            <option value="false">Non en vedette</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Products Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -212,127 +349,159 @@ export const AdminCatalog: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Statut
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProducts.map((product, index) => {
-                const stockStatus = getStockStatus(product.stock);
-                
-                return (
-                  <motion.tr
-                    key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="hover:bg-gray-50"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-12 w-12">
-                          <img
-                            className="h-12 w-12 rounded-lg object-cover"
-                            src={product.image}
-                            alt={product.name}
-                          />
+              {filteredProducts.map((product) => (
+                <motion.tr
+                  key={product.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-12 w-12">
+                        <img
+                          className="h-12 w-12 rounded-lg object-cover"
+                          src={product.images[0] || '/api/placeholder/48/48'}
+                          alt={product.name}
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900 flex items-center">
+                          {product.name}
+                          {product.featured && (
+                            <Star className="w-4 h-4 text-yellow-400 ml-2 fill-current" />
+                          )}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 flex items-center">
-                            {product.name}
-                            {product.isNew && (
-                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                Nouveau
-                              </span>
-                            )}
-                            {product.isExclusive && (
-                              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                Exclusif
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {product.description}
-                          </div>
+                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                          {product.description}
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex items-center">
-                        <span className="font-semibold">€{product.price}</span>
-                        {product.originalPrice && (
-                          <span className="ml-2 text-gray-500 line-through">
-                            €{product.originalPrice}
-                          </span>
-                        )}
-                        {product.isOnSale && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                            Promo
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <span className="text-sm text-gray-900 mr-2">{product.stock}</span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${stockStatus.color}`}>
-                          {stockStatus.text}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {product.category}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div>
+                      <span className="font-medium">{product.price.toFixed(2)} €</span>
+                      {product.originalPrice && (
+                        <span className="text-gray-500 line-through ml-2">
+                          {product.originalPrice.toFixed(2)} €
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Actif
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <button
+                      onClick={() => handleOpenStockManager(product)}
+                      className="flex items-center space-x-2 hover:text-accent-gold transition-colors"
+                    >
+                      <Package className="w-4 h-4" />
+                      <span>{product.stock}</span>
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {getStatusBadge(product)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center space-x-2">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleEditProduct(product)}
+                        className="text-gray-400 hover:text-accent-gold transition-colors"
+                        title="Modifier"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </motion.button>
+
+                      {product.archived ? (
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-gray-400 hover:text-accent-gold transition-colors"
-                          title="Voir"
+                          onClick={() => handleRestoreProduct(product.id)}
+                          className="text-gray-400 hover:text-green-600 transition-colors"
+                          title="Restaurer"
                         >
-                          <Eye className="w-4 h-4" />
+                          <RotateCcw className="w-4 h-4" />
                         </motion.button>
+                      ) : (
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-gray-400 hover:text-blue-600 transition-colors"
-                          title="Modifier"
+                          onClick={() => handleArchiveProduct(product.id)}
+                          className="text-gray-400 hover:text-orange-600 transition-colors"
+                          title="Archiver"
                         >
-                          <Edit className="w-4 h-4" />
+                          <Archive className="w-4 h-4" />
                         </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </motion.button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                );
-              })}
+                      )}
+
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleDeleteProduct(product.id)}
+                        className="text-gray-400 hover:text-red-600 transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </motion.button>
+                    </div>
+                  </td>
+                </motion.tr>
+              ))}
             </tbody>
           </table>
         </div>
-        
-        {filteredProducts.length === 0 && (
+
+        {loading ? (
           <div className="text-center py-12">
-            <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Aucun produit trouvé</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-accent-gold"></div>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Chargement des produits...</h3>
           </div>
-        )}
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Aucun produit trouvé</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Commencez par ajouter un nouveau produit ou modifiez vos filtres.
+            </p>
+          </div>
+        ) : null}
       </div>
+
+      {/* Product Form Modal */}
+      <ProductForm
+        product={selectedProduct}
+        isOpen={isProductFormOpen}
+        onClose={() => {
+          setIsProductFormOpen(false);
+          saveModalState(false, 'create');
+        }}
+        onSave={handleSaveProduct}
+        mode={formMode}
+      />
+
+      {/* Stock Manager Modal */}
+      {selectedProduct && (
+        <StockManager
+          productId={selectedProduct.id}
+          productName={selectedProduct.name}
+          currentStock={selectedProduct.stock}
+          isOpen={isStockManagerOpen}
+          onClose={() => setIsStockManagerOpen(false)}
+          onStockUpdate={handleStockUpdate}
+        />
+      )}
     </div>
   );
 };
+
 
 export default AdminCatalog;

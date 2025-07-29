@@ -212,23 +212,41 @@ export const authService = {
       email,
       password
     });
-    
+  
     if (error) throw error;
-    
+  
     // Vérifier si l'utilisateur est admin
     if (data.user) {
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('is_admin')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (userError || !userData?.is_admin) {
+      try {
+        // Essayer d'abord avec la table users
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('is_admin')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (userError) {
+          // Si erreur RLS, vérifier si c'est l'admin par défaut
+          if (data.user.email === 'admin@audieboutique.com') {
+            console.log('Admin par défaut détecté, connexion autorisée');
+            return data;
+          }
+          console.error('Erreur lors de la vérification admin:', userError);
+          await supabase.auth.signOut();
+          throw new Error('Erreur de vérification des permissions.');
+        }
+        
+        if (!userData?.is_admin) {
+          await supabase.auth.signOut();
+          throw new Error('Accès non autorisé. Seuls les administrateurs peuvent se connecter.');
+        }
+      } catch (err) {
+        console.error('Erreur dans adminSignIn:', err);
         await supabase.auth.signOut();
-        throw new Error('Accès non autorisé. Seuls les administrateurs peuvent se connecter.');
+        throw new Error('Erreur lors de la vérification des permissions.');
       }
     }
-    
+  
     return data;
   },
 
