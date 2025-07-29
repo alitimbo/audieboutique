@@ -8,10 +8,14 @@ interface AuthState {
   profile: any | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   
   // Actions
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, userData: { first_name: string; last_name: string }) => Promise<void>;
+  signUp: (email: string, password: string, userData: { full_name: string }) => Promise<void>;
+  adminSignIn: (email: string, password: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
   signOut: () => Promise<void>;
   initialize: () => Promise<void>;
   setUser: (user: SupabaseUser | null) => void;
@@ -20,11 +24,12 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       profile: null,
       isLoading: false,
       isAuthenticated: false,
+      isAdmin: false,
 
       signIn: async (email: string, password: string) => {
         try {
@@ -33,16 +38,13 @@ export const useAuthStore = create<AuthState>()(
           
           if (user) {
             // Récupérer le profil utilisateur
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', user.id)
-              .single();
+            const profile = await authService.getUserProfile(user.id);
             
             set({ 
               user, 
               profile,
               isAuthenticated: true,
+              isAdmin: profile?.is_admin || false,
               isLoading: false 
             });
           }
@@ -52,32 +54,68 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signUp: async (email: string, password: string, userData: { first_name: string; last_name: string }) => {
+      signUp: async (email: string, password: string, userData: { full_name: string }) => {
         try {
           set({ isLoading: true });
           const { user } = await authService.signUp(email, password, userData);
           
           if (user) {
-            // Créer le profil utilisateur
-            const { data: profile } = await supabase
-              .from('profiles')
-              .insert([{
-                id: user.id,
-                email: user.email,
-                first_name: userData.first_name,
-                last_name: userData.last_name,
-                role: 'user'
-              }])
-              .select()
-              .single();
+            // Récupérer le profil utilisateur créé
+            const profile = await authService.getUserProfile(user.id);
             
             set({ 
               user, 
               profile,
               isAuthenticated: true,
+              isAdmin: false,
               isLoading: false 
             });
           }
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      adminSignIn: async (email: string, password: string) => {
+        try {
+          set({ isLoading: true });
+          const { user } = await authService.adminSignIn(email, password);
+          
+          if (user) {
+            // Récupérer le profil utilisateur
+            const profile = await authService.getUserProfile(user.id);
+            
+            set({ 
+              user, 
+              profile,
+              isAuthenticated: true,
+              isAdmin: true,
+              isLoading: false 
+            });
+          }
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      resetPassword: async (email: string) => {
+        try {
+          set({ isLoading: true });
+          await authService.resetPassword(email);
+          set({ isLoading: false });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      updatePassword: async (password: string) => {
+        try {
+          set({ isLoading: true });
+          await authService.updatePassword(password);
+          set({ isLoading: false });
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -92,6 +130,7 @@ export const useAuthStore = create<AuthState>()(
             user: null, 
             profile: null,
             isAuthenticated: false,
+            isAdmin: false,
             isLoading: false 
           });
         } catch (error) {
@@ -106,16 +145,13 @@ export const useAuthStore = create<AuthState>()(
           const user = await authService.getCurrentUser();
           
           if (user) {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', user.id)
-              .single();
+            const profile = await authService.getUserProfile(user.id);
             
             set({ 
               user, 
               profile,
               isAuthenticated: true,
+              isAdmin: profile?.is_admin || false,
               isLoading: false 
             });
           } else {
@@ -123,6 +159,7 @@ export const useAuthStore = create<AuthState>()(
               user: null, 
               profile: null,
               isAuthenticated: false,
+              isAdmin: false,
               isLoading: false 
             });
           }
@@ -131,6 +168,7 @@ export const useAuthStore = create<AuthState>()(
             user: null, 
             profile: null,
             isAuthenticated: false,
+            isAdmin: false,
             isLoading: false 
           });
         }
@@ -149,7 +187,8 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         profile: state.profile,
-        isAuthenticated: state.isAuthenticated
+        isAuthenticated: state.isAuthenticated,
+        isAdmin: state.isAdmin
       })
     }
   )

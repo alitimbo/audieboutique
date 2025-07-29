@@ -22,11 +22,10 @@ export interface Product {
 export interface User {
   id: string;
   email: string;
-  first_name: string;
-  last_name: string;
-  role: 'user' | 'admin';
+  full_name: string;
+  provider: string;
+  is_admin: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 export interface Order {
@@ -169,7 +168,7 @@ export const orderService = {
 };
 
 export const authService = {
-  async signUp(email: string, password: string, userData: { first_name: string; last_name: string }) {
+  async signUp(email: string, password: string, userData: { full_name: string }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -179,6 +178,22 @@ export const authService = {
     });
     
     if (error) throw error;
+    
+    // Créer l'utilisateur dans la table users
+    if (data.user) {
+      const { error: userError } = await supabase
+        .from('users')
+        .insert({
+          id: data.user.id,
+          email: data.user.email,
+          full_name: userData.full_name,
+          provider: 'email',
+          is_admin: false
+        });
+      
+      if (userError) throw userError;
+    }
+    
     return data;
   },
 
@@ -192,6 +207,47 @@ export const authService = {
     return data;
   },
 
+  async adminSignIn(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+    
+    if (error) throw error;
+    
+    // Vérifier si l'utilisateur est admin
+    if (data.user) {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('is_admin')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (userError || !userData?.is_admin) {
+        await supabase.auth.signOut();
+        throw new Error('Accès non autorisé. Seuls les administrateurs peuvent se connecter.');
+      }
+    }
+    
+    return data;
+  },
+
+  async resetPassword(email: string) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin/reset-password`
+    });
+    
+    if (error) throw error;
+  },
+
+  async updatePassword(password: string) {
+    const { error } = await supabase.auth.updateUser({
+      password
+    });
+    
+    if (error) throw error;
+  },
+
   async signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -200,5 +256,16 @@ export const authService = {
   async getCurrentUser() {
     const { data: { user } } = await supabase.auth.getUser();
     return user;
+  },
+
+  async getUserProfile(userId: string) {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 };
