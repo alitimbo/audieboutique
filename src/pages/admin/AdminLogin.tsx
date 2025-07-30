@@ -25,8 +25,9 @@ export const AdminLogin: React.FC = () => {
     try {
       setIsLoading(true);
       await adminSignIn(email, password);
-      toast.success('Connexion réussie');
+
       navigate('/admin/dashboard');
+      
     } catch (error: any) {
       toast.error(error.message || 'Erreur lors de la connexion');
     } finally {
