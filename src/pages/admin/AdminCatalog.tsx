@@ -3,14 +3,13 @@ import { motion } from 'framer-motion';
 import { 
   Plus, 
   Search, 
-  Filter,
-  Eye,
-  Edit,
-  Trash2,
-  Package,
-  Archive,
-  RotateCcw,
+  Edit, 
+  Trash2, 
+  Archive, 
+  RotateCcw, 
+  Package, 
   Star,
+  Eye,
   AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -102,14 +101,54 @@ export const AdminCatalog: React.FC = () => {
     loadProducts();
   }, []);
 
-  // Recharger les produits quand les filtres changent
-  useEffect(() => {
-    if (!loading) {
-      loadProducts();
-    }
-  }, [filters]);
+  // Appliquer les filtres côté client
+  const applyFilters = () => {
+    console.log('🔍 Application des filtres:', filters);
+    let filtered = [...products];
 
-  // Les filtres sont maintenant gérés par le service ProductService
+    // Filtrage par recherche
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.description.toLowerCase().includes(searchTerm) ||
+        product.category.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Filtrage par catégorie
+    if (filters.category && filters.category !== 'all') {
+      filtered = filtered.filter(product => product.category === filters.category);
+    }
+
+    // Filtrage par statut
+    if (filters.status && filters.status !== 'all') {
+      switch (filters.status) {
+        case 'active':
+          filtered = filtered.filter(product => product.active && !product.archived);
+          break;
+        case 'archived':
+          filtered = filtered.filter(product => product.archived);
+          break;
+        case 'out_of_stock':
+          filtered = filtered.filter(product => product.stock === 0);
+          break;
+      }
+    }
+
+    // Filtrage par featured
+    if (filters.featured !== null) {
+      filtered = filtered.filter(product => product.featured === filters.featured);
+    }
+
+    console.log(`📊 Produits filtrés: ${filtered.length}/${products.length}`);
+    setFilteredProducts(filtered);
+  };
+
+  // Appliquer les filtres quand les produits ou filtres changent
+  useEffect(() => {
+    applyFilters();
+  }, [products, filters]);
 
   // Product CRUD operations
   const handleCreateProduct = () => {
@@ -143,25 +182,7 @@ export const AdminCatalog: React.FC = () => {
     }
   };
 
-  const handleArchiveProduct = async (productId: string) => {
-    try {
-      await ProductService.toggleArchiveProduct(productId, true);
-      toast.success('Produit archivé');
-      await loadProducts(); // Recharger la liste
-    } catch (error) {
-      toast.error('Erreur lors de l\'archivage');
-    }
-  };
 
-  const handleRestoreProduct = async (productId: string) => {
-    try {
-      await ProductService.toggleArchiveProduct(productId, false);
-      toast.success('Produit restauré');
-      await loadProducts(); // Recharger la liste
-    } catch (error) {
-      toast.error('Erreur lors de la restauration');
-    }
-  };
 
   const handleDeleteProduct = async (productId: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer définitivement ce produit ?')) {
@@ -175,23 +196,48 @@ export const AdminCatalog: React.FC = () => {
     }
   };
 
-  // Stock management
+  const handleArchiveProduct = async (productId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir archiver ce produit ?')) {
+      try {
+        await ProductService.toggleArchiveProduct(productId, true);
+        toast.success('Produit archivé');
+        await loadProducts(); // Recharger la liste
+      } catch (error) {
+        toast.error('Erreur lors de l\'archivage');
+      }
+    }
+  };
+
+  const handleRestoreProduct = async (productId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir restaurer ce produit ?')) {
+      try {
+        await ProductService.toggleArchiveProduct(productId, false);
+        toast.success('Produit restauré');
+        await loadProducts(); // Recharger la liste
+      } catch (error) {
+        toast.error('Erreur lors de la restauration');
+      }
+    }
+  };
+
   const handleOpenStockManager = (product: Product) => {
     setSelectedProduct(product);
     setIsStockManagerOpen(true);
   };
 
-  const handleStockUpdate = async (productId: string, newStock: number) => {
+  const handleUpdateStock = async (productId: string, newStock: number) => {
     try {
       await ProductService.updateStock(productId, newStock);
       toast.success('Stock mis à jour');
       await loadProducts(); // Recharger la liste
+      setIsStockManagerOpen(false);
     } catch (error) {
       toast.error('Erreur lors de la mise à jour du stock');
       throw error;
     }
   };
 
+  // Stock management
   const getStatusBadge = (product: Product) => {
     if (product.archived) {
       return <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">Archivé</span>;
@@ -496,7 +542,7 @@ export const AdminCatalog: React.FC = () => {
           currentStock={selectedProduct.stock}
           isOpen={isStockManagerOpen}
           onClose={() => setIsStockManagerOpen(false)}
-          onStockUpdate={handleStockUpdate}
+          onStockUpdate={handleUpdateStock}
         />
       )}
     </div>

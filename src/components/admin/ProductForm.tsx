@@ -5,16 +5,13 @@ import {
   X, 
   Plus, 
   Trash2, 
-  Upload, 
-  Eye,
-  EyeOff,
-  Star,
-  Package,
   Tag,
   Palette
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Product, ProductFormData, PRODUCT_CATEGORIES, PRODUCT_COLORS, PRODUCT_SIZES, PRODUCT_TAGS } from '../../types/product';
+import { ImageUploader } from './ImageUploader';
+import { usePreventReload } from '../../hooks/usePreventReload';
 
 interface ProductFormProps {
   product?: Product;
@@ -48,13 +45,34 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [newImageUrl, setNewImageUrl] = useState('');
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
+  // Clé pour le sessionStorage
+  const FORM_STORAGE_KEY = 'admin_product_form_data';
+
+  // Empêcher les rechargements intempestifs quand le modal est ouvert
+  const { disableProtection } = usePreventReload({
+    when: isOpen,
+    message: 'Vous avez des modifications non sauvegardées dans le formulaire produit. Êtes-vous sûr de vouloir quitter ?'
+  });
+
+  // Sauvegarder les données du formulaire
+  const saveFormData = (data: ProductFormData) => {
+    if (isOpen) {
+      sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(data));
+    }
+  };
+
+  // Restaurer les données du formulaire
+  const restoreFormData = (): ProductFormData | null => {
+    const saved = sessionStorage.getItem(FORM_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  };
+
   useEffect(() => {
     if (product && mode === 'edit') {
-      setFormData({
+      const editData = {
         name: product.name,
         description: product.description,
         price: product.price,
@@ -68,26 +86,45 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         sizes: product.sizes,
         tags: product.tags,
         specifications: product.specifications
-      });
-    } else {
-      // Reset form for create mode
-      setFormData({
-        name: '',
-        description: '',
-        price: 0,
-        originalPrice: undefined,
-        category: '',
-        images: [],
-        stock: 0,
-        featured: false,
-        active: true,
-        colors: [],
-        sizes: [],
-        tags: [],
-        specifications: {}
-      });
+      };
+      setFormData(editData);
+      saveFormData(editData);
+    } else if (mode === 'create') {
+      // Essayer de restaurer les données sauvegardées pour le mode création
+      const savedData = restoreFormData();
+      if (savedData && isOpen) {
+        console.log('🔄 Restauration des données du formulaire:', savedData);
+        setFormData(savedData);
+      } else {
+        // Reset form for create mode
+        const defaultData = {
+          name: '',
+          description: '',
+          price: 0,
+          originalPrice: undefined,
+          category: '',
+          images: [],
+          stock: 0,
+          featured: false,
+          active: true,
+          colors: [],
+          sizes: [],
+          tags: [],
+          specifications: {}
+        };
+        setFormData(defaultData);
+        if (isOpen) saveFormData(defaultData);
+      }
     }
   }, [product, mode, isOpen]);
+
+  // Sauvegarder automatiquement à chaque modification
+  useEffect(() => {
+    if (isOpen) {
+      console.log('💾 Sauvegarde automatique des données du formulaire');
+      saveFormData(formData);
+    }
+  }, [formData, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,8 +150,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       toast.success(mode === 'create' ? 'Produit créé avec succès' : 'Produit modifié avec succès');
       
       // Nettoyer le sessionStorage après une sauvegarde réussie
-      sessionStorage.removeItem('FORM_STORAGE_KEY');
+      sessionStorage.removeItem(FORM_STORAGE_KEY);
       sessionStorage.removeItem('admin_product_modal_state');
+      
+      // Désactiver la protection contre les rechargements
+      disableProtection();
       
       onClose();
     } catch (error) {
@@ -124,22 +164,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
 
-  const addImage = () => {
-    if (newImageUrl && !formData.images.includes(newImageUrl)) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, newImageUrl]
-      }));
-      setNewImageUrl('');
-    }
-  };
 
-  const removeImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-  };
 
   const toggleColor = (color: typeof PRODUCT_COLORS[0]) => {
     setFormData(prev => {
@@ -330,48 +355,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           {/* Images */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Upload className="w-4 h-4 inline mr-2" />
-              Images
+              Images du produit
             </label>
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={newImageUrl}
-                  onChange={(e) => setNewImageUrl(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all"
-                  placeholder="URL de l'image"
-                />
-                <button
-                  type="button"
-                  onClick={addImage}
-                  className="px-4 py-2 bg-accent-gold text-luxury-black rounded-lg hover:bg-accent-gold/90 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              
-              {formData.images.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {formData.images.map((image, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={image}
-                        alt={`Image ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg border border-gray-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ImageUploader
+              images={formData.images}
+              onImagesChange={(images) => setFormData(prev => ({ ...prev, images }))}
+              productId={product?.id}
+              maxImages={5}
+            />
           </div>
 
           {/* Couleurs */}

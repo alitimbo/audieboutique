@@ -36,7 +36,8 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         {/* Actions */}
         <div className="flex items-center space-x-4">
           {/* Barre de recherche */}
-          <div className="hidden md:flex items-center">
+          {/*
+            <div className="hidden md:flex items-center">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -46,6 +47,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               />
             </div>
           </div>
+          */}
 
           {/* Notifications */}
           <motion.button
