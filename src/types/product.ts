@@ -49,6 +49,17 @@ export interface ProductFilters {
   featured: boolean | null;
 }
 
+export interface StockMovementDb {
+  id: string; // L'identifiant unique du mouvement (généré automatiquement).
+  product_id: string; // L'identifiant du produit concerné.
+  type: 'in' | 'out' | 'adjustment'; // Le type de mouvement.
+  quantity_change: number; // La quantité qui a été ajoutée ou retirée.
+  new_stock: number; // La nouvelle quantité en stock après ce mouvement.
+  reason?: string; // La raison du mouvement (optionnelle).
+  user_id?: string; // L'identifiant de l'utilisateur qui a effectué le mouvement (optionnel).
+  created_at: string; // La date et l'heure de l'enregistrement du mouvement.
+}
+
 export const PRODUCT_CATEGORIES = [
   'Soldes',
   'Spécial Fêtes', 

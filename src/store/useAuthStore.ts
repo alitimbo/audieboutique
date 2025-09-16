@@ -1,30 +1,35 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { User as SupabaseUser } from '@supabase/supabase-js';
-import { supabase, authService } from '../lib/supabase';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { User as SupabaseUser } from '@supabase/supabase-js'
+import { supabase, authService } from '../lib/supabase'
+import { User } from '../lib/supabase' // 👈 Importez l'interface User mise à jour
 
 interface AuthState {
-  user: SupabaseUser | null;
-  profile: any | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  
+  user: SupabaseUser | null
+  profile: User | null // 👈 Mettez à jour le type de profile
+  isLoading: boolean
+  isAuthenticated: boolean
+  isAdmin: boolean
+
   // Actions
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, userData: { full_name: string }) => Promise<void>;
-  adminSignIn: (email: string, password: string) => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  updatePassword: (password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  initialize: () => Promise<void>;
-  setUser: (user: SupabaseUser | null) => void;
-  setProfile: (profile: any | null) => void;
+  signIn: (email: string, password: string) => Promise<void>
+  signUp: (
+    email: string,
+    password: string,
+    userData: { full_name: string }
+  ) => Promise<void>
+  adminSignIn: (email: string, password: string) => Promise<void>
+  resetPassword: (email: string) => Promise<void>
+  updatePassword: (password: string) => Promise<void>
+  signOut: () => Promise<void>
+  initialize: () => Promise<void>
+  setUser: (user: SupabaseUser | null) => void
+  setProfile: (profile: User | null) => void // 👈 Mettez à jour le type de setProfile
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    set => ({
       user: null,
       profile: null,
       isLoading: false,
@@ -33,158 +38,160 @@ export const useAuthStore = create<AuthState>()(
 
       signIn: async (email: string, password: string) => {
         try {
-          set({ isLoading: true });
-          const { user } = await authService.signIn(email, password);
-          
+          set({ isLoading: true })
+          const { user } = await authService.signIn(email, password)
+
           if (user) {
-            // Récupérer le profil utilisateur
-            const profile = await authService.getUserProfile(user.id);
-            
-            set({ 
-              user, 
+            const profile = await authService.getUserProfile(user.id)
+
+            set({
+              user,
               profile,
               isAuthenticated: true,
-              isAdmin: profile?.is_admin || false,
-              isLoading: false 
-            });
+              isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+              isLoading: false
+            })
           }
         } catch (error) {
-          set({ isLoading: false });
-          throw error;
+          set({ isLoading: false })
+          throw error
         }
       },
 
-      signUp: async (email: string, password: string, userData: { full_name: string }) => {
+      signUp: async (
+        email: string,
+        password: string,
+        userData: { full_name: string }
+      ) => {
         try {
-          set({ isLoading: true });
-          const { user } = await authService.signUp(email, password, userData);
-          
+          set({ isLoading: true })
+          const { user } = await authService.signUp(email, password, userData)
+
           if (user) {
-            // Récupérer le profil utilisateur créé
-            const profile = await authService.getUserProfile(user.id);
-            
-            set({ 
-              user, 
+            const profile = await authService.getUserProfile(user.id)
+
+            set({
+              user,
               profile,
               isAuthenticated: true,
-              isAdmin: false,
-              isLoading: false 
-            });
+              isAdmin: false, // Les nouveaux utilisateurs ne sont pas admin
+              isLoading: false
+            })
           }
         } catch (error) {
-          set({ isLoading: false });
-          throw error;
+          set({ isLoading: false })
+          throw error
         }
       },
 
       adminSignIn: async (email: string, password: string) => {
         try {
-          set({ isLoading: true });
-          const { user } = await authService.adminSignIn(email, password);
-          
+          set({ isLoading: true })
+          const { user } = await authService.adminSignIn(email, password)
+
           if (user) {
-            // Récupérer le profil utilisateur
-            const profile = await authService.getUserProfile(user.id);
-            
-            set({ 
-              user, 
+            const profile = await authService.getUserProfile(user.id)
+
+            set({
+              user,
               profile,
               isAuthenticated: true,
-              isAdmin: true,
-              isLoading: false 
-            });
+              isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+              isLoading: false
+            })
           }
         } catch (error) {
-          set({ isLoading: false });
-          throw error;
+          set({ isLoading: false })
+          throw error
         }
       },
 
       resetPassword: async (email: string) => {
         try {
-          set({ isLoading: true });
-          await authService.resetPassword(email);
-          set({ isLoading: false });
+          set({ isLoading: true })
+          await authService.resetPassword(email)
+          set({ isLoading: false })
         } catch (error) {
-          set({ isLoading: false });
-          throw error;
+          set({ isLoading: false })
+          throw error
         }
       },
 
       updatePassword: async (password: string) => {
         try {
-          set({ isLoading: true });
-          await authService.updatePassword(password);
-          set({ isLoading: false });
+          set({ isLoading: true })
+          await authService.updatePassword(password)
+          set({ isLoading: false })
         } catch (error) {
-          set({ isLoading: false });
-          throw error;
+          set({ isLoading: false })
+          throw error
         }
       },
 
       signOut: async () => {
         try {
-          set({ isLoading: true });
-          await authService.signOut();
-          set({ 
-            user: null, 
+          set({ isLoading: true })
+          await authService.signOut()
+          set({
+            user: null,
             profile: null,
             isAuthenticated: false,
             isAdmin: false,
-            isLoading: false 
-          });
+            isLoading: false
+          })
         } catch (error) {
-          set({ isLoading: false });
-          throw error;
+          set({ isLoading: false })
+          throw error
         }
       },
 
       initialize: async () => {
         try {
-          set({ isLoading: true });
-          const user = await authService.getCurrentUser();
-          
+          set({ isLoading: true })
+          const user = await authService.getCurrentUser()
+
           if (user) {
-            const profile = await authService.getUserProfile(user.id);
-            
-            set({ 
-              user, 
+            const profile = await authService.getUserProfile(user.id)
+
+            set({
+              user,
               profile,
               isAuthenticated: true,
-              isAdmin: profile?.is_admin || false,
-              isLoading: false 
-            });
+              isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+              isLoading: false
+            })
           } else {
-            set({ 
-              user: null, 
+            set({
+              user: null,
               profile: null,
               isAuthenticated: false,
               isAdmin: false,
-              isLoading: false 
-            });
+              isLoading: false
+            })
           }
         } catch (error) {
-          set({ 
-            user: null, 
+          set({
+            user: null,
             profile: null,
             isAuthenticated: false,
             isAdmin: false,
-            isLoading: false 
-          });
+            isLoading: false
+          })
         }
       },
 
       setUser: (user: SupabaseUser | null) => {
-        set({ user, isAuthenticated: !!user });
+        set({ user, isAuthenticated: !!user })
       },
 
-      setProfile: (profile: any | null) => {
-        set({ profile });
+      setProfile: (profile: User | null) => {
+        // 👈 Mise à jour du type
+        set({ profile })
       }
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         user: state.user,
         profile: state.profile,
         isAuthenticated: state.isAuthenticated,
@@ -192,16 +199,16 @@ export const useAuthStore = create<AuthState>()(
       })
     }
   )
-);
+)
 
 // Écouter les changements d'authentification
 supabase.auth.onAuthStateChange((event, session) => {
-  const { setUser, initialize } = useAuthStore.getState();
-  
+  const { setUser, initialize } = useAuthStore.getState()
+
   if (event === 'SIGNED_IN' && session?.user) {
-    setUser(session.user);
-    initialize();
+    setUser(session.user)
+    initialize()
   } else if (event === 'SIGNED_OUT') {
-    setUser(null);
+    setUser(null)
   }
-});
+})
