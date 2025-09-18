@@ -61,10 +61,8 @@ export interface StockMovementDb {
 }
 
 export const PRODUCT_CATEGORIES = [
-  'Soldes',
   'Spécial Fêtes', 
   'Femmes',
-  'Wax',
   'Corsets & Gaines',
   'Maillots de bain',
   'Sacs & portes monnaies',
@@ -90,7 +88,4 @@ export const PRODUCT_TAGS = [
   'Soldes',
   'Collections',
   'Exclusivités',
-  'Bestseller',
-  'Promo',
-  'Nouveau'
 ];

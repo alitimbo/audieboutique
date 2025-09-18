@@ -1,5 +1,10 @@
 import { supabase } from '../lib/supabase'
-import { Product, ProductFormData, ProductFilters, StockMovementDb } from '../types/product'
+import {
+  Product,
+  ProductFormData,
+  ProductFilters,
+  StockMovementDb
+} from '../types/product'
 
 export class ProductService {
   // Récupérer tous les produits avec filtres
@@ -75,6 +80,26 @@ export class ProductService {
       return filteredData
     } catch (error) {
       console.error('💥 Erreur ProductService.getProducts:', error)
+      throw error
+    }
+  }
+
+  //Recupere tous les produits sans filtre
+  static async getAllProducts (): Promise<Product[]> {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Erreur lors de la récupération des produits:', error)
+        throw new Error('Impossible de récupérer les produits')
+      }
+
+      return data || []
+    } catch (error) {
+      console.error('Erreur ProductService.getAllProducts:', error)
       throw error
     }
   }
@@ -278,22 +303,27 @@ export class ProductService {
   }
 
   //recuperer la liste des mouvements
-  static async getStockMovementById (productId: string): Promise<StockMovementDb[]> {
+  static async getStockMovementById (
+    productId: string
+  ): Promise<StockMovementDb[]> {
     try {
       const { data, error } = await supabase
         .from('stock_movements')
         .select('*')
-        .match({ product_id: productId });
+        .match({ product_id: productId })
 
       if (error) {
-        console.error('Erreur lors de la récupération des mouvements de stock:', error)
+        console.error(
+          'Erreur lors de la récupération des mouvements de stock:',
+          error
+        )
         throw new Error('Impossible de récupérer les mouvements de stock')
       }
 
-      return data || [];
+      return data || []
     } catch (error) {
       console.error('Erreur ProductService.getStockMovementById:', error)
-      throw error;
+      throw error
     }
   }
 
