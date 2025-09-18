@@ -12,6 +12,16 @@ import {
   Gem,
   FolderHeart as UserHeart
 } from 'lucide-react'
+import { PRODUCT_CATEGORIES } from '../../types/product'
+
+// Fonction utilitaire pour formater le nom de la catégorie en URL (kebab-case)
+const formatCategoryNameForUrl = (name: string): string => {
+  return name
+    .toLowerCase()
+    .replace(/ & /g, '-')
+    .replace(/ /g, '-')
+    .replace(/'/g, '')
+}
 
 interface Category {
   id: string
@@ -22,82 +32,62 @@ interface Category {
   description: string
 }
 
-const categories: Category[] = [
-  {
-    id: 'soldes',
-    name: 'Soldes',
-    icon: <Percent className='w-8 h-8' />,
-    link: '/shop/tags/soldes',
-    color: 'from-luxury-red to-red-700',
-    description: "Jusqu'à -70%"
-  },
-  {
-    id: 'fetes',
-    name: 'Spécial Fêtes',
+// Mappage des noms de catégories aux propriétés spécifiques
+const categoryMap: Record<string, Omit<Category, 'name' | 'link'>> = {
+  'Spécial Fêtes': {
+    id: 'special-fetes',
     icon: <Sparkles className='w-8 h-8' />,
-    link: '/shop/category/fetes',
     color: 'from-yellow-500 to-yellow-600',
     description: 'Collection exclusive'
   },
-  {
+  Femmes: {
     id: 'femmes',
-    name: 'Femmes',
     icon: <Users className='w-8 h-8' />,
-    link: '/shop/category/femmes',
     color: 'from-pink-500 to-pink-600',
     description: 'Mode féminine'
   },
-  /*
-  {
-    id: 'wax',
-    name: 'Wax',
-    icon: <Shirt className='w-8 h-8' />,
-    link: '/shop/tags/wax',
-    color: 'from-orange-500 to-orange-600',
-    description: 'Imprimés africains'
-  },
-  */
-  {
-    id: 'corsets',
-    name: 'Corsets & Gaines',
+  'Corsets & Gaines': {
+    id: 'corsets-et-gaines',
     icon: <Heart className='w-8 h-8' />,
-    link: '/shop/category/corsets',
     color: 'from-purple-500 to-purple-600',
     description: 'Silhouette parfaite'
   },
-  {
-    id: 'maillots',
-    name: 'Maillots de bain',
+  'Maillots de bain': {
+    id: 'maillots-de-bain',
     icon: <Waves className='w-8 h-8' />,
-    link: '/shop/category/maillots',
     color: 'from-blue-500 to-blue-600',
     description: 'Collection été'
   },
-  {
-    id: 'sacs',
-    name: 'Sacs & Portes monnaies',
+  'Sacs & portes monnaies': {
+    id: 'sacs-et-portes-monnaies',
     icon: <ShoppingBag className='w-8 h-8' />,
-    link: '/shop/category/sacs',
     color: 'from-green-500 to-green-600',
     description: 'Accessoires chic'
   },
-  {
+  Bijoux: {
     id: 'bijoux',
-    name: 'Bijoux',
     icon: <Gem className='w-8 h-8' />,
-    link: '/shop/category/bijoux',
     color: 'from-indigo-500 to-indigo-600',
     description: 'Éclat précieux'
   },
-  {
-    id: 'couple',
-    name: 'En couple',
+  'En couple': {
+    id: 'en-couple',
     icon: <UserHeart className='w-8 h-8' />,
-    link: '/shop/category/couple',
     color: 'from-red-500 to-red-600',
     description: 'Looks assortis'
   }
-]
+}
+
+const categories: Category[] = PRODUCT_CATEGORIES.map(categoryName => {
+  const formattedLink = `/shop/category/${formatCategoryNameForUrl(
+    categoryName
+  )}`
+  return {
+    ...categoryMap[categoryName],
+    name: categoryName,
+    link: formattedLink
+  }
+})
 
 export const CategoryGrid: React.FC = () => {
   const containerVariants = {

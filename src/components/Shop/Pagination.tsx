@@ -1,13 +1,14 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import React from 'react'
+import { motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  totalItems: number;
-  itemsPerPage: number;
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  totalItems: number
+  itemsPerPage: number
+  onItemsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
@@ -15,48 +16,53 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
   totalItems,
-  itemsPerPage
+  itemsPerPage,
+  onItemsPerPageChange
 }) => {
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const startItem = (currentPage - 1) * itemsPerPage + 1
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   const getVisiblePages = () => {
-    const delta = 2;
-    const range = [];
-    const rangeWithDots = [];
+    const delta = 2
+    const range = []
+    const rangeWithDots = []
 
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i);
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i)
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, 'dots1');
+      rangeWithDots.push(1, 'dots1')
     } else {
-      rangeWithDots.push(1);
+      rangeWithDots.push(1)
     }
 
-    rangeWithDots.push(...range);
+    rangeWithDots.push(...range)
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('dots2', totalPages);
+      rangeWithDots.push('dots2', totalPages)
     } else {
-      rangeWithDots.push(totalPages);
+      rangeWithDots.push(totalPages)
     }
 
-    return rangeWithDots;
-  };
+    return rangeWithDots
+  }
 
-  if (totalPages <= 1) return null;
+  if (totalPages <= 1) return null
 
   return (
-    <div className="flex flex-col items-center space-y-4 mt-12">
+    <div className='flex flex-col items-center space-y-4 mt-12'>
       {/* Items info */}
-      <p className="text-luxury-gray-600 text-sm">
+      <p className='text-luxury-gray-600 text-sm'>
         Affichage de {startItem} à {endItem} sur {totalItems} produits
       </p>
 
       {/* Pagination controls */}
-      <div className="flex items-center space-x-2">
+      <div className='flex items-center space-x-2'>
         {/* Previous button */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -69,23 +75,23 @@ export const Pagination: React.FC<PaginationProps> = ({
               : 'bg-luxury-white text-luxury-black border border-luxury-gray-300 hover:border-luxury-red hover:text-luxury-red shadow-sm'
           }`}
         >
-          <ChevronLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Précédent</span>
+          <ChevronLeft className='w-4 h-4' />
+          <span className='hidden sm:inline'>Précédent</span>
         </motion.button>
 
         {/* Page numbers */}
-        <div className="flex items-center space-x-1">
+        <div className='flex items-center space-x-1'>
           {getVisiblePages().map((page, index) => {
             if (page === 'dots1' || page === 'dots2') {
               return (
-                <div key={page} className="px-3 py-2">
-                  <MoreHorizontal className="w-4 h-4 text-luxury-gray-400" />
+                <div key={page} className='px-3 py-2'>
+                  <MoreHorizontal className='w-4 h-4 text-luxury-gray-400' />
                 </div>
-              );
+              )
             }
 
-            const pageNumber = page as number;
-            const isActive = pageNumber === currentPage;
+            const pageNumber = page as number
+            const isActive = pageNumber === currentPage
 
             return (
               <motion.button
@@ -101,7 +107,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               >
                 {pageNumber}
               </motion.button>
-            );
+            )
           })}
         </div>
 
@@ -117,21 +123,18 @@ export const Pagination: React.FC<PaginationProps> = ({
               : 'bg-luxury-white text-luxury-black border border-luxury-gray-300 hover:border-luxury-red hover:text-luxury-red shadow-sm'
           }`}
         >
-          <span className="hidden sm:inline">Suivant</span>
-          <ChevronRight className="w-4 h-4" />
+          <span className='hidden sm:inline'>Suivant</span>
+          <ChevronRight className='w-4 h-4' />
         </motion.button>
       </div>
 
       {/* Items per page selector */}
-      <div className="flex items-center space-x-2 text-sm">
-        <span className="text-luxury-gray-600">Produits par page:</span>
+      <div className='flex items-center space-x-2 text-sm'>
+        <span className='text-luxury-gray-600'>Produits par page:</span>
         <select
           value={itemsPerPage}
-          onChange={(e) => {
-            // This would need to be handled by parent component
-            console.log('Items per page changed:', e.target.value);
-          }}
-          className="px-3 py-1 border border-luxury-gray-300 rounded-lg focus:ring-2 focus:ring-luxury-red focus:border-transparent"
+          onChange={onItemsPerPageChange}
+          className='px-3 py-1 border border-luxury-gray-300 rounded-lg focus:ring-2 focus:ring-luxury-red focus:border-transparent'
         >
           <option value={12}>12</option>
           <option value={24}>24</option>
@@ -139,5 +142,5 @@ export const Pagination: React.FC<PaginationProps> = ({
         </select>
       </div>
     </div>
-  );
-};
+  )
+}
