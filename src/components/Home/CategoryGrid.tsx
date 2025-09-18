@@ -13,15 +13,7 @@ import {
   FolderHeart as UserHeart
 } from 'lucide-react'
 import { PRODUCT_CATEGORIES } from '../../types/product'
-
-// Fonction utilitaire pour formater le nom de la catégorie en URL (kebab-case)
-const formatCategoryNameForUrl = (name: string): string => {
-  return name
-    .toLowerCase()
-    .replace(/ & /g, '-')
-    .replace(/ /g, '-')
-    .replace(/'/g, '')
-}
+import { formatCategoryNameForUrl } from '../../utils/productUrl'
 
 interface Category {
   id: string

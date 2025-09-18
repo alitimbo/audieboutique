@@ -9,10 +9,16 @@ import { SortDropdown } from '../components/Shop/SortDropdown'
 import { Pagination } from '../components/Shop/Pagination'
 import { useProductStore } from '../store/useProductStore'
 import { applyAllFilters, sortProducts } from '../utils/productFilters'
+import {
+  getOriginalTagWithSwitch,
+  getOriginalCategoryNameWithSwitch
+} from '../utils/productUrl'
+import { useParams } from 'react-router-dom'
 
 export const Shop: React.FC = () => {
   const { products, loading, error, fetchProducts } = useProductStore()
-
+  const { tags } = useParams<{ tags: string }>()
+  const { category } = useParams<{ category: string }>()
   // State for all filters
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [selectedTag, setSelectedTag] = useState<string>('')
@@ -28,6 +34,22 @@ export const Shop: React.FC = () => {
   // Nouveaux états pour la pagination
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [itemsPerPage, setItemsPerPage] = useState<number>(12)
+
+  useEffect(() => {
+    if (tags) {
+      const tag = getOriginalTagWithSwitch(tags)
+      setSelectedTag(tag || '')
+    }
+  }, [tags])
+
+  useEffect(() => {
+    if (category) {
+      const originalCategory = getOriginalCategoryNameWithSwitch(category)
+      if (originalCategory) {
+        setSelectedCategories([originalCategory])
+      }
+    }
+  }, [category])
 
   // Mettre à jour la page actuelle lorsque les filtres changent
   useEffect(() => {
@@ -112,12 +134,14 @@ export const Shop: React.FC = () => {
   // 2. Then, sort the filtered products
   const sortedAndFilteredProducts = sortProducts(filteredProducts, sortOption)
   // 2. Calculer les produits à afficher sur la page actuelle
-  const totalProducts = sortedAndFilteredProducts.length;
-  const totalPages = Math.ceil(totalProducts / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedProducts = sortedAndFilteredProducts.slice(startIndex, endIndex);
-
+  const totalProducts = sortedAndFilteredProducts.length
+  const totalPages = Math.ceil(totalProducts / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedProducts = sortedAndFilteredProducts.slice(
+    startIndex,
+    endIndex
+  )
 
   return (
     <>
@@ -199,10 +223,10 @@ export const Shop: React.FC = () => {
               </motion.div>
 
               {/* Products Grid - Now receives the filtered and sorted products */}
-              <ProductGrid products={paginatedProducts } />
+              <ProductGrid products={paginatedProducts} />
 
               {/* Le composant de pagination vient ici */}
-              <Pagination 
+              <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}

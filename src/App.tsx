@@ -181,7 +181,7 @@ function App () {
                       />
                       <Route path='/cookies' element={<CookiesPage />} />
                       <Route
-                        path='/shop/tags/:collections'
+                        path='/shop/tags/:tags'
                         element={<Shop />}
                       />
                       <Route

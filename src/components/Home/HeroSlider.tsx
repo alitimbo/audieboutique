@@ -27,6 +27,7 @@ const slides: Slide[] = [
     ctaLink: '/shop',
     backgroundImage: BannerOne
   },
+  /*
   {
     id: 2,
     title: 'Collection Wax Exclusive',
@@ -38,13 +39,14 @@ const slides: Slide[] = [
     backgroundClass:
       'bg-gradient-to-br from-luxury-red/20 via-luxury-black to-luxury-gray-900'
   },
+  */
   {
     id: 3,
     title: 'Soldes Exceptionnels',
     subtitle: "Jusqu'à -70% sur une sélection",
     description: 'Profitez de nos prix réduits sur vos articles préférés.',
     cta: 'Voir les Soldes',
-    ctaLink: '/soldes',
+    ctaLink: '/shop/tags/soldes',
     backgroundClass:
       'bg-gradient-to-br from-luxury-gray-900 via-luxury-black to-luxury-red/10'
   },
@@ -55,7 +57,7 @@ const slides: Slide[] = [
     description:
       'Sculptez votre silhouette avec nos pièces de lingerie haut de gamme.',
     cta: 'Découvrir la gamme',
-    ctaLink: '/collections/corsets',
+    ctaLink: '/shop/category/corsets-gaines',
     backgroundClass:
       'bg-gradient-to-br from-purple-900/30 via-luxury-black to-luxury-gray-900'
   }
