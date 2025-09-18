@@ -8,37 +8,37 @@ const timelineEvents = [
     year: '2018',
     title: 'Les Débuts',
     description: 'Création d\'Audie Boutique dans un petit atelier de Fort-de-France avec une vision : célébrer la beauté caribéenne.',
-    image: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/history-2018.png'
   },
   {
     year: '2019',
     title: 'Première Collection Wax',
     description: 'Lancement de notre première collection de robes wax, mêlant tradition africaine et modernité caribéenne.',
-    image: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/history-2019.png'
   },
   {
     year: '2020',
     title: 'Expansion Lingerie',
     description: 'Développement de notre gamme lingerie premium, pensée pour sublimer toutes les morphologies.',
-    image: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/history-2020.png'
   },
   {
     year: '2021',
     title: 'Partenariats Artisans',
     description: 'Collaboration avec 15 artisans locaux pour préserver et valoriser le savoir-faire martiniquais.',
-    image: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/history-2021.png'
   },
   {
     year: '2022',
     title: 'Boutique en Ligne',
     description: 'Lancement de notre plateforme e-commerce pour partager notre vision au-delà des frontières.',
-    image: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/history-2022.png'
   },
   {
-    year: '2024',
+    year: '2025',
     title: 'Aujourd\'hui',
     description: 'Plus de 10 000 clientes conquises et une communauté qui grandit chaque jour autour de nos valeurs.',
-    image: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/history-2025.png'
   }
 ];
 
@@ -81,7 +81,7 @@ export const OurStory: React.FC = () => {
         <section className="relative h-screen overflow-hidden">
           <div className="absolute inset-0">
             <img
-              src="https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              src="/history-bg.png"
               alt="Notre Histoire - Audie Boutique"
               className="w-full h-full object-cover"
             />
@@ -152,7 +152,7 @@ export const OurStory: React.FC = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <MapPin className="w-5 h-5 text-luxury-red" />
-                    <span className="text-luxury-white/80">Fort-de-France, Martinique</span>
+                    <span className="text-luxury-white/80">97215 Rivière salée, Martinique</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-5 h-5 text-luxury-red" />
@@ -198,7 +198,7 @@ export const OurStory: React.FC = () => {
                 className="relative"
               >
                 <img
-                  src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  src="/history-one.png"
                   alt="Inspiration caribéenne"
                   className="w-full h-96 object-cover rounded-3xl shadow-luxury"
                 />
@@ -218,7 +218,7 @@ export const OurStory: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="order-2 lg:order-1">
                   <h3 className="text-3xl font-display font-bold text-luxury-black mb-6">
-                    Rencontrez Audie
+                    Rencontrez AUDE
                   </h3>
                   <div className="space-y-4 text-luxury-gray-700 leading-relaxed">
                     <p>
@@ -234,14 +234,14 @@ export const OurStory: React.FC = () => {
                     </p>
                   </div>
                   <div className="mt-8">
-                    <div className="text-luxury-black font-semibold text-lg">Audie Martineau</div>
+                    <div className="text-luxury-black font-semibold text-lg">AUDE PLESDIN</div>
                     <div className="text-luxury-red">Fondatrice & Directrice Créative</div>
                   </div>
                 </div>
                 
                 <div className="order-1 lg:order-2">
                   <img
-                    src="https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=500"
+                    src="/history-two.png"
                     alt="Audie Martineau, Fondatrice"
                     className="w-full h-80 object-cover rounded-3xl shadow-luxury"
                   />
@@ -373,7 +373,7 @@ export const OurStory: React.FC = () => {
               
               <div className="border-t border-luxury-red/30 pt-8 mt-8">
                 <div className="text-luxury-white font-display text-3xl mb-2">
-                  Audie Martineau
+                  AUDE PLESDIN
                 </div>
                 <div className="text-luxury-red">
                   Fondatrice & Âme d'Audie Boutique

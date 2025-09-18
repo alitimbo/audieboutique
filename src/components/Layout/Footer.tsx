@@ -16,8 +16,8 @@ import {
 import Logo from '../../images/logo_blanc.png'
 
 export const Footer: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = useLocation()
+  const navigate = useNavigate()
   const footerSections = [
     {
       title: 'Boutique',
@@ -32,10 +32,10 @@ export const Footer: React.FC = () => {
       title: 'Service Client',
       links: [
         { name: 'Aide & Support', path: '/support' },
-        { name: 'Livraison & Retours', path: '/livraison' },
+        /*{ name: 'Livraison & Retours', path: '/livraison' },*/
         { name: 'Guide des tailles', path: '/size-guide' },
         { name: 'FAQ', path: '/support#faq' },
-        { name: 'Politique de retour', path: '/retour' }
+        /*{ name: 'Politique de retour', path: '/retour' }*/
       ]
     },
     {
@@ -43,8 +43,8 @@ export const Footer: React.FC = () => {
       links: [
         { name: 'Notre histoire', path: '/our-story' },
         { name: 'Engagement qualité', path: '/quality' },
-        { name: 'Carrières', path: '/careers' },
-        { name: 'Presse', path: '/press' }
+        /*{ name: 'Carrières', path: '/careers' },*/
+        /*{ name: 'Presse', path: '/press' }*/
       ]
     },
     {
@@ -53,7 +53,7 @@ export const Footer: React.FC = () => {
         { name: 'CGV', path: '/cgv' },
         { name: 'Mentions légales', path: '/mentions-legales' },
         { name: 'Politique de confidentialité', path: '/confidentialite' },
-        { name: 'Cookies', path: '/cookies' }
+        /*{ name: 'Cookies', path: '/cookies' }*/
       ]
     }
   ]
@@ -135,11 +135,11 @@ export const Footer: React.FC = () => {
                   </div>
                   <div className='flex items-center text-luxury-gray-400 text-sm'>
                     <Phone className='h-4 w-4 mr-3 text-luxury-red' />
-                    +596 1 23 45 67 89
+                    0696 01 01 11
                   </div>
                   <div className='flex items-center text-luxury-gray-400 text-sm'>
                     <MapPin className='h-4 w-4 mr-3 text-luxury-red' />
-                    Fort-de-france, Martinique
+                    97215 Rivière salée, Martinique
                   </div>
                 </div>
               </motion.div>
@@ -164,8 +164,10 @@ export const Footer: React.FC = () => {
                           href='/support#faq'
                           onClick={e => {
                             if (location.pathname === '/support') {
-                              e.preventDefault();
-                              window.dispatchEvent(new CustomEvent('scrollToFaq'));
+                              e.preventDefault()
+                              window.dispatchEvent(
+                                new CustomEvent('scrollToFaq')
+                              )
                             }
                           }}
                           className='text-luxury-gray-400 hover:text-luxury-red transition-colors duration-200 text-sm'

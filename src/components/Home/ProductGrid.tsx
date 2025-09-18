@@ -1,71 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
+import { useProductStore } from '../../store/useProductStore'
+import { useNavigate } from 'react-router-dom'
 
-const mockProducts = [
-  {
-    idx: 0,
-    id: '2540e94d-961e-4127-8f88-1c836a6fed15',
-    name: 'Ensemble Lingerie Dentelle Rouge Passion',
-    description:
-      'Ensemble lingerie en dentelle française premium avec finitions soignées',
-    price: '89.99',
-    original_price: '119.99',
-    stock: 16,
-    category: 'Femmes',
-    images: [
-      'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800'
-    ],
-    featured: false,
-    archived: false,
-    active: true,
-    colors:
-      '[{"name": "Rouge Passion", "value": "#B3001B"}, {"name": "Noir Élégant", "value": "#000000"}]',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    tags: ['Bestseller', 'Nouveautés'],
-    specifications:
-      '{"Origine": "Fabriqué en France", "Matière": "Dentelle française 90% Polyamide, 10% Élasthanne", "Entretien": "Lavage à la main recommandé"}',
-    rating: null,
-    reviews: 0,
-    badge: null,
-    created_at: '2025-07-29 21:57:58.388992+00',
-    updated_at: '2025-09-16 18:39:59.722555+00',
-    is_new: true,
-    is_on_sale: true,
-    is_exclusive: false
-  },
-  {
-    idx: 1,
-    id: '5409b571-de77-4e0e-9c0f-abda77dae68e',
-    name: 'Corset Sculptant Premium Noir',
-    description: 'Corset sculptant avec armatures pour un maintien parfait',
-    price: '75.00',
-    original_price: null,
-    stock: 18,
-    category: 'Corsets & Gaines',
-    images: [
-      'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=800'
-    ],
-    featured: true,
-    archived: false,
-    active: true,
-    colors: '[{"name": "Noir", "value": "#000000"}]',
-    sizes: ['S', 'M', 'L', 'XL'],
-    tags: ['Nouveau'],
-    specifications:
-      '{"Matière": "Satin et dentelle", "Armatures": "Oui", "Fermeture": "Lacets ajustables"}',
-    rating: null,
-    reviews: 0,
-    badge: null,
-    created_at: '2025-07-29 21:57:58.388992+00',
-    updated_at: '2025-07-30 14:50:29.913354+00',
-    is_new: false,
-    is_on_sale: false,
-    is_exclusive: true
-  }
-]
+
 
 export const ProductGrid: React.FC = () => {
+  const naviage = useNavigate()
+  const { products, loading, error, fetchProducts } = useProductStore()
+  useEffect(() => {
+    if (products.length === 0) {
+      fetchProducts()
+    }
+  }, [fetchProducts, products.length])
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -89,6 +37,64 @@ export const ProductGrid: React.FC = () => {
         damping: 12
       }
     }
+  }
+  if (loading) {
+    return (
+      <section className='py-20 bg-luxury-black'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className='text-center mb-16'
+          >
+            <h2 className='text-3xl md:text-4xl font-display font-bold text-luxury-white mb-4'>
+              Nouveautés
+            </h2>
+            <p className='text-lg text-luxury-gray-300 max-w-2xl mx-auto'>
+              Découvrez les dernières pièces de notre collection, sélectionnées
+              avec passion
+            </p>
+          </motion.div>
+          <div className='flex justify-center items-center h-48'>
+            <div className='loader ease-linear rounded-full border-8 border-t-transparent border-luxury-red h-16 w-16'></div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const newProductsFromStore = products.filter(product => {
+    // Vérifie si le tableau de tags du produit contient la valeur 'Nouveautés'
+    return product.tags.includes('Nouveautés')
+  })
+
+  if (newProductsFromStore.length === 0) {
+    return (
+      <section className='py-20 bg-luxury-black'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className='text-center mb-16'
+          >
+            <h2 className='text-3xl md:text-4xl font-display font-bold text-luxury-white mb-4'>
+              Nouveautés
+            </h2>
+            <p className='text-lg text-luxury-gray-300 max-w-2xl mx-auto'>
+              Découvrez les dernières pièces de notre collection, sélectionnées
+              avec passion
+            </p>
+          </motion.div>
+          <div className='flex justify-center items-center h-48'>
+            <p className='text-luxury-gray-400'>
+              Aucun nouveau produit pour le moment.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -115,7 +121,7 @@ export const ProductGrid: React.FC = () => {
           whileInView='visible'
           className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'
         >
-          {mockProducts.map(product => (
+          {newProductsFromStore.map(product => (
             <motion.div
               key={product.id}
               variants={itemVariants}
@@ -131,33 +137,21 @@ export const ProductGrid: React.FC = () => {
                 />
 
                 {/* Badge */}
-                {product.is_on_sale && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className={`absolute top-4 left-4 bg-luxury-red text-white text-xs font-medium px-3 py-1 rounded-full`}
-                  >
-                    Promo
-                  </motion.span>
-                )}
-                {product.is_new && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className={`absolute top-4 left-4 bg-green-500 text-white text-xs font-medium px-3 py-1 rounded-full`}
-                  >
-                    Nouveau
-                  </motion.span>
-                )}
-                {product.is_exclusive && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className={`absolute top-4 left-4 bg-purple-500 text-white text-xs font-medium px-3 py-1 rounded-full`}
-                  >
-                    Exclusif
-                  </motion.span>
-                )}
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className={`absolute top-4 left-4 bg-luxury-red text-white text-xs font-medium px-3 py-1 rounded-full`}
+                >
+                  {product.category}
+                </motion.span>
+
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className={`absolute top-4 left-4 bg-green-500 text-white text-xs font-medium px-3 py-1 rounded-full`}
+                >
+                  Nouveau
+                </motion.span>
 
                 {/* Hover Actions */}
                 <div className='absolute inset-0 bg-luxury-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3'>
@@ -222,7 +216,7 @@ export const ProductGrid: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => {}}
+            onClick={() => naviage('/shop')}
             className='inline-flex items-center px-8 py-4 border-2 border-luxury-red text-luxury-red font-semibold rounded-2xl hover:bg-luxury-red hover:text-luxury-white transition-all duration-300'
           >
             Voir tous les produits

@@ -14,6 +14,7 @@ interface FocusCategory {
 }
 
 const focusCategories: FocusCategory[] = [
+  /*
   {
     id: 'wax',
     name: 'Collection Wax',
@@ -23,13 +24,14 @@ const focusCategories: FocusCategory[] = [
     link: '/collections/wax',
     features: ['Tissus authentiques', 'Motifs exclusifs', 'Coupe moderne', 'Confort optimal']
   },
+  */
   {
     id: 'corsets',
     name: 'Corsets & Gaines',
     title: 'Sculptez Votre Silhouette',
     description: 'Révélez votre féminité avec notre gamme premium de corsets et gaines. Confort, maintien et élégance pour une silhouette parfaitement sculptée.',
-    image: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=600',
-    link: '/collections/corsets',
+    image: '/gaine-corset.png',
+    link: '/shop/category/corsets-gaines',
     features: ['Maintien optimal', 'Matières premium', 'Confort longue durée', 'Effet sculptant']
   },
   {
@@ -37,8 +39,8 @@ const focusCategories: FocusCategory[] = [
     name: 'Bijoux Créoles',
     title: 'L\'Éclat des Antilles',
     description: 'Sublimez votre beauté naturelle avec nos bijoux inspirés de la culture créole. Or, argent et pierres précieuses pour un style authentiquement caribéen.',
-    image: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=600',
-    link: '/collections/bijoux',
+    image: '/bijoux.png',
+    link: '/shop/category/bijoux',
     features: ['Or 18 carats', 'Pierres naturelles', 'Design créole', 'Fabrication artisanale']
   }
 ];

@@ -62,7 +62,7 @@ export const SizeGuide: React.FC = () => {
         <section className="relative h-96 overflow-hidden">
           <div className="absolute inset-0">
             <img
-              src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              src="/size-bg.png"
               alt="Guide des tailles - Audie Boutique"
               className="w-full h-full object-cover"
             />

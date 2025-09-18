@@ -95,7 +95,7 @@ export const Quality: React.FC = () => {
         <section className="relative h-96 overflow-hidden">
           <div className="absolute inset-0">
             <img
-              src="https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              src="/quality-bg.png"
               alt="Engagement Qualité - Audie Boutique"
               className="w-full h-full object-cover"
             />
@@ -217,7 +217,7 @@ export const Quality: React.FC = () => {
               
               <div className="relative">
                 <img
-                  src="https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  src="/bijoux.png"
                   alt="Artisans martiniquais"
                   className="w-full h-80 object-cover rounded-2xl"
                 />

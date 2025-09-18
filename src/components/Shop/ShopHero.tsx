@@ -8,7 +8,7 @@ export const ShopHero: React.FC = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1200"
+          src="/shop-bg.png"
           alt="Audie Boutique Collection"
           className="w-full h-full object-cover opacity-30"
         />
