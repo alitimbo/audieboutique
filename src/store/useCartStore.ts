@@ -1,33 +1,41 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { Product } from '../lib/supabase';
+// src/store/useCartStore.ts
+
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { Product } from '../types/product'
 
 export interface CartItem {
-  id: string;
-  product: Product;
-  quantity: number;
-  selectedSize?: string;
-  selectedColor?: string;
+  id: string
+  product: Product
+  quantity: number
+  selectedSize?: string
+  selectedColor?: string
 }
 
 interface CartState {
-  items: CartItem[];
-  isOpen: boolean;
-  total: number;
-  
+  items: CartItem[]
+  isOpen: boolean
+  total: number
+
   // Actions
-  addItem: (product: Product, quantity?: number, options?: { size?: string; color?: string }) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
-  toggleCart: () => void;
-  openCart: () => void;
-  closeCart: () => void;
-  
+  addItem: (
+    product: Product,
+    quantity?: number,
+    options?: { size?: string; color?: string }
+  ) => void
+  removeItem: (id: string) => void
+  updateQuantity: (id: string, quantity: number) => void
+  clearCart: () => void
+  toggleCart: () => void
+  openCart: () => void
+  closeCart: () => void
+
   // Getters
-  getTotalItems: () => number;
-  getItemQuantity: (productId: string) => number;
-  calculateTotal: () => number;
+  getTotalItems: () => number
+  getItemQuantity: (productId: string) => number
+
+  // Fonctions de calcul qui ne modifient pas l'état
+  calculateTotal: (items?: CartItem[]) => number
 }
 
 export const useCartStore = create<CartState>()(
@@ -37,99 +45,118 @@ export const useCartStore = create<CartState>()(
       isOpen: false,
       total: 0,
 
-      addItem: (product: Product, quantity = 1, options = {}) => {
-        const state = get();
-        const existingItemIndex = state.items.findIndex(
-          item => item.product.id === product.id && 
-                  item.selectedSize === options.size && 
-                  item.selectedColor === options.color
-        );
+      // --- Actions ---
 
+      addItem: (product: Product, quantity = 1, options = {}) => {
+        const state = get()
+        const existingItemIndex = state.items.findIndex(
+          item =>
+            item.product.id === product.id &&
+            item.selectedSize === options.size &&
+            item.selectedColor === options.color
+        )
+
+        let updatedItems
         if (existingItemIndex >= 0) {
-          // Article existant, augmenter la quantité
-          const updatedItems = [...state.items];
-          updatedItems[existingItemIndex].quantity += quantity;
-          set({ items: updatedItems });
+          updatedItems = [...state.items]
+          updatedItems[existingItemIndex].quantity += quantity
         } else {
-          // Nouvel article
           const newItem: CartItem = {
-            id: `${product.id}-${options.size || 'default'}-${options.color || 'default'}`,
+            id: `${product.id}-${options.size || 'default'}-${
+              options.color || 'default'
+            }`,
             product,
             quantity,
             selectedSize: options.size,
             selectedColor: options.color
-          };
-          set({ items: [...state.items, newItem] });
+          }
+          updatedItems = [...state.items, newItem]
         }
-        
-        // Recalculer le total
-        get().calculateTotal();
+
+        // Mise à jour atomique: items ET total en une seule fois.
+        set({
+          items: updatedItems,
+          total: get().calculateTotal(updatedItems)
+        })
       },
 
       removeItem: (id: string) => {
-        const state = get();
-        const updatedItems = state.items.filter(item => item.id !== id);
-        set({ items: updatedItems });
-        get().calculateTotal();
+        const state = get()
+        const updatedItems = state.items.filter(item => item.id !== id)
+
+        // Mise à jour atomique
+        set({
+          items: updatedItems,
+          total: get().calculateTotal(updatedItems)
+        })
       },
 
       updateQuantity: (id: string, quantity: number) => {
-        const state = get();
+        const state = get()
         if (quantity <= 0) {
-          get().removeItem(id);
-          return;
+          get().removeItem(id)
+          return
         }
-        
+
         const updatedItems = state.items.map(item =>
           item.id === id ? { ...item, quantity } : item
-        );
-        set({ items: updatedItems });
-        get().calculateTotal();
+        )
+
+        // Mise à jour atomique
+        set({
+          items: updatedItems,
+          total: get().calculateTotal(updatedItems)
+        })
       },
 
       clearCart: () => {
-        set({ items: [], total: 0 });
+        set({ items: [], total: 0 })
       },
 
       toggleCart: () => {
-        set(state => ({ isOpen: !state.isOpen }));
+        set(state => ({ isOpen: !state.isOpen }))
       },
 
       openCart: () => {
-        set({ isOpen: true });
+        set({ isOpen: true })
       },
 
       closeCart: () => {
-        set({ isOpen: false });
+        set({ isOpen: false })
       },
 
+      // --- Getters ---
+
       getTotalItems: () => {
-        const state = get();
-        return state.items.reduce((total, item) => total + item.quantity, 0);
+        const state = get()
+        return state.items.reduce((total, item) => total + item.quantity, 0)
       },
 
       getItemQuantity: (productId: string) => {
-        const state = get();
-        const item = state.items.find(item => item.product.id === productId);
-        return item ? item.quantity : 0;
+        const state = get()
+        const item = state.items.find(item => item.product.id === productId)
+        return item ? item.quantity : 0
       },
 
-      calculateTotal: () => {
-        const state = get();
-        const total = state.items.reduce(
-          (sum, item) => sum + (item.product.price * item.quantity),
+      // Fonction de calcul qui ne modifie pas l'état
+      calculateTotal: (items = get().items) => {
+        return items.reduce(
+          (sum, item) =>
+            sum + parseFloat(item.product.price as string) * item.quantity,
           0
-        );
-        set({ total });
-        return total;
+        )
       }
     }),
     {
       name: 'cart-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         items: state.items,
         total: state.total
       })
+      // Cela évite les erreurs de persistance avec les types complexes
+      // et garantit que les données sont bien des chaînes dans le localStorage.
+      // NOTE: Le parse et le stringify ne sont nécessaires que si vous avez des types
+      // complexes qui ne peuvent pas être sérialisés directement par JSON.
     }
   )
-);
+)

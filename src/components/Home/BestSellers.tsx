@@ -2,9 +2,25 @@ import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Eye, Star } from 'lucide-react'
 import { useProductStore } from '../../store/useProductStore'
+import { useNavigate } from 'react-router-dom'
+import { useCartStore } from '../../store/useCartStore'
+import { toast } from 'sonner'
 
 export const BestSellers: React.FC = () => {
+  const navigate = useNavigate()
+  const { addItem } = useCartStore()
   const { products, loading, error, fetchProducts } = useProductStore()
+
+  const handleAddToCart = (productId: string) => {
+    const product = products.find(p => p.id === productId)
+    if (product) {
+      addItem(product, 1, {
+        size: product.sizes ? product.sizes[0] : undefined,
+        color: product.colors ? product.colors[0].name : undefined
+      })
+      toast.success(`${product.name} ajouté au panier`)
+    }
+  }
 
   useEffect(() => {
     if (products.length === 0) {
@@ -62,13 +78,12 @@ export const BestSellers: React.FC = () => {
     )
   }
 
- 
   const bestSellersFromStore = products.filter(product => {
     // Vérifie si le tableau de tags du produit contient la valeur 'Meilleures ventes'
     return product.tags.includes('Meilleures ventes')
   })
 
-   if (bestSellersFromStore.length === 0) {
+  if (bestSellersFromStore.length === 0) {
     return (
       <section className='py-20 bg-luxury-black'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -94,7 +109,6 @@ export const BestSellers: React.FC = () => {
       </section>
     )
   }
-
 
   return (
     <section className='py-20 bg-luxury-black'>
@@ -140,19 +154,18 @@ export const BestSellers: React.FC = () => {
                 />
 
                 {/* Badge */}
-                {product.badge && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className='absolute top-4 left-4 bg-luxury-red text-white text-xs font-medium px-3 py-1 rounded-full'
-                  >
-                    {product.category}
-                  </motion.span>
-                )}
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className='absolute top-4 left-4 bg-luxury-red text-white text-xs font-medium px-3 py-1 rounded-full'
+                >
+                  {product.category}
+                </motion.span>
 
                 {/* Hover Overlay */}
                 <div className='absolute inset-0 bg-luxury-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
                   <motion.button
+                    onClick={() => navigate(`/product/${product.id}`)}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className='bg-luxury-white text-luxury-black p-3 rounded-full hover:bg-luxury-red hover:text-luxury-white transition-colors duration-200 mr-3'
@@ -160,6 +173,7 @@ export const BestSellers: React.FC = () => {
                     <Eye className='w-5 h-5' />
                   </motion.button>
                   <motion.button
+                    onClick={() => handleAddToCart(product.id)}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className='bg-luxury-red text-luxury-white p-3 rounded-full hover:bg-red-700 transition-colors duration-200'
@@ -210,6 +224,7 @@ export const BestSellers: React.FC = () => {
                 </div>
 
                 <motion.button
+                  onClick={() => navigate(`/product/${product.id}`)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className='text-xs w-full bg-luxury-red text-luxury-white py-3 rounded-2xl font-medium hover:bg-red-700 transition-colors duration-200'

@@ -3,17 +3,29 @@ import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { useProductStore } from '../../store/useProductStore'
 import { useNavigate } from 'react-router-dom'
-
-
+import { useCartStore } from '../../store/useCartStore'
+import { toast } from 'sonner'
 
 export const ProductGrid: React.FC = () => {
   const naviage = useNavigate()
+  const { addItem } = useCartStore()
   const { products, loading, error, fetchProducts } = useProductStore()
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts()
     }
   }, [fetchProducts, products.length])
+
+  const handleAddToCart = (productId: string) => {
+    const product = products.find(p => p.id === productId)
+    if (product) {
+      addItem(product, 1, {
+        size: product.sizes ? product.sizes[0] : undefined,
+        color: product.colors ? product.colors[0].name : undefined
+      })
+      toast.success(`${product.name} ajouté au panier`)
+    }
+  }
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -158,7 +170,7 @@ export const ProductGrid: React.FC = () => {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => {}}
+                    onClick={() => naviage(`/product/${product.id}`)}
                     className='bg-luxury-white text-luxury-black p-2 rounded-full hover:bg-luxury-red hover:text-luxury-white transition-colors duration-200'
                   >
                     <Eye className='w-4 h-4' />
@@ -196,7 +208,7 @@ export const ProductGrid: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => {}}
+                  onClick={() => handleAddToCart(product.id)}
                   className='w-full bg-luxury-red text-luxury-white py-3 rounded-2xl font-medium hover:bg-red-700 transition-colors duration-200 flex items-center justify-center space-x-2'
                 >
                   <ShoppingCart className='w-4 h-4' />

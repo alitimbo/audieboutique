@@ -12,13 +12,13 @@ interface SEOProps {
 
 export const SEO: React.FC<SEOProps> = ({
   title,
-  description = 'LuxStore - Boutique en ligne premium avec design luxueux et produits exclusifs',
-  keywords = 'luxe, premium, boutique, e-commerce, mode, design',
+  description = 'Audie Boutique - La référence de la lingerie, mode et accessoires en Martinique. Entre audace, wax et élégance. Livraison gratuite dès 80€.',
+  keywords = 'luxe, premium, boutique, e-commerce, mode, design, bijoux, accessoires, vêtements, martinique',
   image = '/og-image.jpg',
   url = window.location.href,
   type = 'website'
 }) => {
-  const fullTitle = `${title} | LuxStore`;
+  const fullTitle = `${title} | Audie Boutique`;
 
   return (
     <Helmet>
@@ -26,7 +26,7 @@ export const SEO: React.FC<SEOProps> = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      <meta name="author" content="LuxStore" />
+      <meta name="author" content="Audie Boutique" />
       <meta name="robots" content="index, follow" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       
@@ -49,47 +49,15 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="msapplication-TileColor" content="#B3001B" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta name="apple-mobile-web-app-title" content="Audie Boutique" />
       
       {/* Canonical URL */}
       <link rel="canonical" href={url} />
       
-      {/* Structured Data for Products */}
-      {type === 'product' && (
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": title,
-            "description": description,
-            "image": image,
-            "brand": {
-              "@type": "Brand",
-              "name": "LuxStore"
-            },
-            "offers": {
-              "@type": "Offer",
-              "availability": "https://schema.org/InStock",
-              "priceCurrency": "EUR"
-            }
-          })}
-        </script>
-      )}
-      
-      {/* Structured Data for Organization */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "LuxStore",
-          "url": "https://luxstore.com",
-          "logo": "https://luxstore.com/logo.png",
-          "sameAs": [
-            "https://www.instagram.com/luxstore",
-            "https://www.facebook.com/luxstore",
-            "https://www.twitter.com/luxstore"
-          ]
-        })}
-      </script>
+      {/* Favicon */}
+      <link rel="icon" href="/favicon.ico" />
+      <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      <link rel="manifest" href="/site.webmanifest" />
     </Helmet>
   );
 };
