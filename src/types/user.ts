@@ -6,3 +6,4 @@ export interface UserData {
   role: string
   created_at: string
 }
+

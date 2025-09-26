@@ -137,15 +137,7 @@ export const orderService = {
   async getByUserId (userId: string): Promise<Order[]> {
     const { data, error } = await supabase
       .from('orders')
-      .select(
-        `
-        *,
-        items:order_items(
-          *,
-          product:products(*)
-        )
-      `
-      )
+      .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
@@ -189,6 +181,7 @@ export const authService = {
     if (error) throw error
 
     // Créer l'utilisateur dans la table users
+
     if (data.user) {
       const { error: userError } = await supabase.from('users').insert({
         id: data.user.id,
@@ -273,6 +266,26 @@ export const authService = {
     })
 
     if (error) throw error
+  },
+
+  async updateFullName (userId: string, newFullName: string) {
+    // 1. Mettre à jour les métadonnées de l'utilisateur Auth (pour la cohérence avec Supabase)
+    const { error: authError } = await supabase.auth.updateUser({
+      data: {
+        full_name: newFullName
+      }
+    })
+    if (authError) throw authError // 2. Mettre à jour la table de profil (public.users)
+
+    const { data, error: profileError } = await supabase
+      .from('users')
+      .update({ full_name: newFullName })
+      .eq('id', userId)
+      .select()
+      .single() // Récupère le profil mis à jour pour le store
+
+    if (profileError) throw profileError
+    return data // Retourne le profil complet mis à jour
   },
 
   async signOut () {

@@ -21,6 +21,7 @@ import { OurStory } from './pages/OurStory'
 import { Careers } from './pages/Careers'
 import { Press } from './pages/Press'
 import { Support } from './pages/Support'
+import { Account } from './pages/Account'
 import ReturnPolicy from './pages/ReturnPolicy'
 import CookieBanner from './components/ui/CookieBanner'
 import CGV from './pages/CGV'
@@ -188,6 +189,7 @@ function App () {
                         path='/shop/category/:category'
                         element={<Shop />}
                       />
+                      <Route path='/account' element={<Account />} />
                     </Routes>
                   </motion.main>
                 </AnimatePresence>

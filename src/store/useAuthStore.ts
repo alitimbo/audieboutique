@@ -22,6 +22,7 @@ interface AuthState {
   resetPassword: (email: string) => Promise<void>
   updatePassword: (password: string) => Promise<void>
   signOut: () => Promise<void>
+  updateFullName: (userId: string, newFullName: string) => Promise<void>
   initialize: () => Promise<void>
   setUser: (user: SupabaseUser | null) => void
   setProfile: (profile: User | null) => void // 👈 Mettez à jour le type de setProfile
@@ -80,6 +81,7 @@ export const useAuthStore = create<AuthState>()(
           }
         } catch (error) {
           set({ isLoading: false })
+          console.error('Signup error:', error)
           throw error
         }
       },
@@ -141,6 +143,37 @@ export const useAuthStore = create<AuthState>()(
           })
         } catch (error) {
           set({ isLoading: false })
+          throw error
+        }
+      },
+
+      updateFullName: async (userId: string, newFullName: string) => {
+        try {
+          set({ isLoading: true })
+          // 1. Appel du service pour la mise à jour BDD (auth.users + public.users)
+          const updatedProfile = await authService.updateFullName(
+            userId,
+            newFullName
+          )
+
+          // 2. Mise à jour de l'état local du store
+          set(state => ({
+            profile: updatedProfile, // Mise à jour du profile complet depuis la BDD
+            isLoading: false,
+            // Mise à jour de l'objet 'user' (Supabase) pour le 'full_name' dans les métadonnées
+            user: state.user
+              ? {
+                  ...state.user,
+                  user_metadata: {
+                    ...state.user.user_metadata,
+                    full_name: newFullName
+                  }
+                }
+              : null
+          }))
+        } catch (error) {
+          set({ isLoading: false })
+          console.error('Erreur lors de la mise à jour du nom:', error)
           throw error
         }
       },

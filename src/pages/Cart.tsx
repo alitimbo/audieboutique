@@ -10,12 +10,18 @@ import { EmptyCart } from '../components/Cart/EmptyCart'
 import { AuthSection } from '../components/Cart/AuthSection'
 import { useCartStore } from '../store/useCartStore'
 import { useAuthStore } from '../store/useAuthStore'
+import { toast } from 'sonner'
+import { CartServices } from '../services/cartServices'
+import { useNavigate } from 'react-router-dom'
 
 export const Cart: React.FC = () => {
   // Utilisez le store Zustand pour gérer l'état du panier
+  const navigate = useNavigate()
   const cartStore = useCartStore()
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, signUp, signIn } = useAuthStore()
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [address, setAddress] = useState<string | null>(null)
 
   // Accédez directement aux données du store
   const cartItems = cartStore.items
@@ -44,15 +50,43 @@ export const Cart: React.FC = () => {
 
   // Logique de paiement
   const handleCheckout = async () => {
+    if (!address) {
+      setCheckoutError(
+        'Veuillez ajouter ou sélectionner une adresse de livraison'
+      )
+      setTimeout(() => setCheckoutError(null), 4000)
+      return
+    }
     setIsCheckoutLoading(true)
     try {
       // Intégration Stripe ou autre passerelle de paiement
       console.log('Proceeding to checkout with items from Zustand store:', {
-        items: cartItems,
+        cartItems,
+        itemCount,
+        shipping,
+        subtotal,
         total,
-        user: isAuthenticated ? user : null
+        address,
+        user: isAuthenticated ? user?.id : null
       })
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      if (user?.id) {
+        const response = await CartServices.checkout(
+          user.id,
+          address,
+          cartItems,
+          itemCount,
+          shipping,
+          subtotal,
+          total
+        )
+        if (response.success) {
+          //Logique ouverture du checkout
+          
+          toast.success('Commande réussie')
+          //cartStore.clearCart()
+          //setTimeout(() => navigate('/account'), 3000)
+        }
+      }
     } catch (error) {
       console.error('Checkout error:', error)
     } finally {
@@ -63,6 +97,13 @@ export const Cart: React.FC = () => {
   // Fonctions d'authentification (restent inchangées)
   const handleLogin = async (email: string, password: string) => {
     console.log('Login:', { email, password })
+    try {
+      await signIn(email, password)
+      toast.success('Connexion réussie !')
+    } catch (error) {
+      toast.error('Échec de la connexion. Vérifiez vos identifiants.')
+      console.error('Login error:', error)
+    }
   }
 
   const handleRegister = async (
@@ -70,7 +111,26 @@ export const Cart: React.FC = () => {
     password: string,
     name: string
   ) => {
-    console.log('Register:', { email, password, name })
+    try {
+      await signUp(email, password, { full_name: name })
+      toast.success('Inscription réussie ! Vous êtes maintenant connecté.')
+    } catch (error) {
+      // 1. Déterminer le message d'erreur
+      let errorMessage =
+        "Une erreur inconnue est survenue lors de l'inscription."
+
+      if (error && typeof error === 'object' && 'message' in error) {
+        // Si c'est une erreur Supabase ou une erreur standard avec une propriété 'message'
+        errorMessage = (error as { message: string }).message // 2. Adapter le message pour l'utilisateur (optionnel mais recommandé)
+        if (errorMessage.includes('at least 6 characters')) {
+          errorMessage = 'Le mot de passe doit contenir au moins 6 caractères.'
+        } else if (errorMessage.includes('already registered')) {
+          errorMessage = 'Cette adresse e-mail est déjà enregistrée.'
+        } // Ajoutez d'autres traductions si nécessaire
+      } // 3. Afficher le message d'erreur spécifique
+      toast.error(`Erreur: ${errorMessage}`) // 4. Afficher l'erreur complète dans la console pour le débogage
+      console.error('Registration error:', error)
+    }
   }
 
   const handleGoogleLogin = async () => {
@@ -79,6 +139,10 @@ export const Cart: React.FC = () => {
 
   const handleContinueAsGuest = () => {
     console.log('Continue as guest')
+  }
+
+  const handleSelectedAddress = (id: string) => {
+    setAddress(id)
   }
 
   // Rendu conditionnel pour le panier vide
@@ -150,7 +214,8 @@ export const Cart: React.FC = () => {
                 user={
                   user
                     ? {
-                        name: user.user_metadata?.first_name || 'Utilisateur',
+                        id: user.id,
+                        name: user.user_metadata?.full_name || 'Utilisateur',
                         email: user.email || ''
                       }
                     : undefined
@@ -159,6 +224,7 @@ export const Cart: React.FC = () => {
                 onRegister={handleRegister}
                 onGoogleLogin={handleGoogleLogin}
                 onContinueAsGuest={handleContinueAsGuest}
+                onSelectedAddress={handleSelectedAddress}
               />
 
               <motion.div
@@ -210,6 +276,7 @@ export const Cart: React.FC = () => {
                 total={total}
                 itemCount={itemCount}
                 onCheckout={handleCheckout}
+                onError={checkoutError}
                 isLoading={isCheckoutLoading}
               />
             </div>
