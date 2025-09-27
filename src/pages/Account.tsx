@@ -264,6 +264,21 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
     }
   }
 
+  const frenchStatus = (status: Order['status']) => {
+    switch (status) {
+      case 'delivered':
+        return 'Livré'
+      case 'shipped':
+        return 'Expédié' // Corrigé : ajout de l'accent aigu
+      case 'processing':
+        return 'En cours de traitement' // Plus précis que 'En cours'
+      case 'cancelled':
+        return 'Annulée'
+      default:
+        return 'En attente' // Corrigé : 'En attente'
+    }
+  }
+
   return (
     <div className='space-y-4'>
       {orders.length > 0
@@ -286,7 +301,7 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
                     order.status
                   )}`}
                 >
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  {frenchStatus(order.status)}
                 </span>
               </div>
               <p className='text-sm text-luxury-gray-500 mb-2'>
