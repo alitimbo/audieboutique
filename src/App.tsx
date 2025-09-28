@@ -22,6 +22,7 @@ import { Careers } from './pages/Careers'
 import { Press } from './pages/Press'
 import { Support } from './pages/Support'
 import { Account } from './pages/Account'
+import { Login } from './pages/Login'
 import ReturnPolicy from './pages/ReturnPolicy'
 import CookieBanner from './components/ui/CookieBanner'
 import CGV from './pages/CGV'
@@ -159,6 +160,7 @@ function App () {
                   >
                     <Routes>
                       <Route path='/' element={<Home />} />
+                      <Route path='/login' element={<Login />} />
                       <Route path='/shop' element={<Shop />} />
                       <Route path='/product/:id' element={<ProductDetail />} />
                       <Route path='/cart' element={<Cart />} />
@@ -181,10 +183,7 @@ function App () {
                         element={<Confidentialite />}
                       />
                       <Route path='/cookies' element={<CookiesPage />} />
-                      <Route
-                        path='/shop/tags/:tags'
-                        element={<Shop />}
-                      />
+                      <Route path='/shop/tags/:tags' element={<Shop />} />
                       <Route
                         path='/shop/category/:category'
                         element={<Shop />}

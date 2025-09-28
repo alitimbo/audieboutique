@@ -342,7 +342,7 @@ export const Account: React.FC = () => {
   // Redirection si non authentifié
   if (!isAuthenticated && !isLoading) {
     toast.info('Veuillez vous connecter pour accéder à votre compte.')
-    return <Navigate to='/cart' /> // Rediriger l'utilisateur vers le panier/login
+    return <Navigate to='/' /> // Rediriger l'utilisateur vers le panier/login
   }
 
   // Affiche un état de chargement initial si l'authentification est en cours

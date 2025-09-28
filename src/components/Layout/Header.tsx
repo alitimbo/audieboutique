@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, User, Search, Menu, X } from 'lucide-react'
 import { useCartStore } from '../../store/useCartStore'
 import { useAuthStore } from '../../store/useAuthStore'
 import Logo from '../../images/logo_blanc.png'
+import { subscribeNotificationUser } from '../../lib/notificationSubscription'
 
 export const Header: React.FC = () => {
   const location = useLocation()
@@ -20,6 +21,12 @@ export const Header: React.FC = () => {
     { name: 'Soldes', path: '/shop/tags/soldes' },
     { name: 'Contact', path: '/contact' }
   ]
+
+  useEffect(() => {
+    if (user) {
+      subscribeNotificationUser(user.id)
+    }
+  }, [])
 
   return (
     <motion.header
@@ -98,7 +105,7 @@ export const Header: React.FC = () => {
             {/* User Account */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Link
-                to={user ? '/account' : '/auth'}
+                to={user ? '/account' : '/login'}
                 className='p-2 text-luxury-white hover:text-luxury-red transition-colors duration-200'
               >
                 <User className='h-5 w-5' />

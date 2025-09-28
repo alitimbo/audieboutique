@@ -1,3 +1,5 @@
+import { UserServices } from '../services/userService'
+
 /**
  * Convertit une chaîne Base64 URL Safe en Uint8Array pour l'API Push
  * @param {string} base64String
@@ -16,28 +18,44 @@ const urlBase64ToUint8Array = (base64String: string) => {
   return outputArray
 }
 
-export const subscribeNotificationUser = () => {
+export const subscribeNotificationUser = (userId: string) => {
   if ('Notification' in window && Notification.permission !== 'denied') {
-    // 1. Demander la permission à l'utilisateur
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        // 2. Enregistrer l'abonnement via le Service Worker
-        navigator.serviceWorker.ready.then(registration => {
-          const applicationServerKey = 'BOPNtQe13cPlVvf5keLExt_AOOKc_ch9MpQAtQ0Knqiko4PGxLjkchVYoUOQjf63ZZMyDAWiEoz57PpoqwrcDRc' // Voir section 2
+    console.log('Notifications disponibles ✅')
 
-          registration.pushManager
-            .subscribe({
+    Notification.requestPermission().then(permission => {
+      console.log('Permission :', permission)
+
+      if (permission === 'granted') {
+        console.log('Permission accordée, attente du SW...')
+
+        navigator.serviceWorker.ready
+          .then(async registration => {
+            console.log('SW prêt ✅', registration)
+
+            const applicationServerKey = urlBase64ToUint8Array(
+              'BH0A62O96dKNtLxv3XzR4PU6L7WqTHe4NXjfVNGhgqWV82kt22SmMxkYJCwRcioItw26dQC11EQ7O6KNZkPQYoY'
+            )
+            console.log('Clé VAPID convertie ✅', applicationServerKey)
+
+            const subscription = await registration.pushManager.subscribe({
               userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
+              applicationServerKey
             })
-            .then(subscription => {
-              // 3. ENVOYER l'objet 'subscription' au serveur (voir B.)
-              //sendSubscriptionToServer(subscription);
-              console.log(subscription)
-            })
-            .catch(error => console.error('Erreur d’abonnement push :', error))
-        })
+
+            const subJson = subscription.toJSON()
+
+            return subJson
+
+            console.log('yes', subJson)
+          })
+          .then(subscription => {
+            UserServices.saveNotificationToken(subscription, userId)
+            console.log('Abonnement push OK ✅', subscription)
+          })
+          .catch(error => console.error('Erreur d’abonnement push ❌ :', error))
       }
     })
+  } else {
+    console.warn('Notifications non supportées ❌')
   }
 }

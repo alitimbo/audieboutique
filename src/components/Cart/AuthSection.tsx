@@ -21,7 +21,7 @@ interface AuthSectionProps {
   onRegister: (email: string, password: string, name: string) => Promise<void>
   onGoogleLogin: () => Promise<void>
   onContinueAsGuest: () => void // Cette fonction ne sera plus utilisée dans le rendu, mais gardée dans l'interface
-  onSelectedAddress: (id: string) => void
+  onSelectedAddress: (id: string) => void 
 }
 
 export const AuthSection: React.FC<AuthSectionProps> = ({

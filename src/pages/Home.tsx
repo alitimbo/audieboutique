@@ -10,12 +10,10 @@ import { DeliveryBanner } from '../components/Home/DeliveryBanner'
 import { Testimonials } from '../components/Home/Testimonials'
 import { WhyAudie } from '../components/Home/WhyAudie'
 import { Newsletter } from '../components/Home/Newsletter'
-import { subscribeNotificationUser } from '../lib/notificationSubscription'
+
 
 export const Home: React.FC = () => {
-  useEffect(() => {
-    subscribeNotificationUser()
-  }, [])
+  
   return (
     <>
       <SEO
