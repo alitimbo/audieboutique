@@ -50,6 +50,7 @@ const slides: Slide[] = [
     backgroundClass:
       'bg-gradient-to-br from-luxury-gray-900 via-luxury-black to-luxury-red/10'
   },
+  /*
   {
     id: 4,
     title: 'Corsets & Gaines Premium',
@@ -60,6 +61,18 @@ const slides: Slide[] = [
     ctaLink: '/shop/category/corsets-gaines',
     backgroundClass:
       'bg-gradient-to-br from-purple-900/30 via-luxury-black to-luxury-gray-900'
+  },
+  */
+  {
+    id: 5,
+    title: 'Bijoux d’Exception',
+    subtitle: 'Élégance et Raffinement',
+    description:
+      'Découvrez notre collection exclusive de bijoux en Martinique, alliant luxe, finesse et éclat. Chaque pièce est conçue pour sublimer votre style et illuminer vos moments précieux.',
+    cta: 'Explorer la gamme',
+    ctaLink: '/shop/category/bijoux',
+    backgroundClass:
+      'bg-gradient-to-br from-yellow-600/30 via-luxury-black to-luxury-gray-900'
   }
 ]
 
