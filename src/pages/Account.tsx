@@ -5,6 +5,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { SEO } from '../components/ui/SEO'
 import { toast } from 'sonner'
 import { useAuthStore } from '../store/useAuthStore'
+import { ProductService } from '../services/productService'
 import { orderService, Order } from '../lib/supabase' // Assurez-vous que orderService et Order sont exportés correctement
 
 // --- Composants Helpers pour la Structure et le Style ---
@@ -199,7 +200,7 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
   const [orders, setOrders] = useState<any[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  console.log(orders)
+  //console.log(orders)
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -338,6 +339,7 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
 export const Account: React.FC = () => {
   const { user, profile, signOut, isAuthenticated, isLoading } = useAuthStore()
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const [allFavoris, setAllFavoris] = useState<any[]>([])
 
   // Redirection si non authentifié
   if (!isAuthenticated && !isLoading) {
@@ -353,6 +355,20 @@ export const Account: React.FC = () => {
       </div>
     )
   }
+
+  const handleUserFavoris = async () => {
+    if (user) {
+      const response = await ProductService.getFavorisByUserId(user.id)
+      if (response.length > 0) {
+        setAllFavoris(response)
+      }
+    }
+  }
+  useEffect(() => {
+    handleUserFavoris()
+  }, [user])
+
+  //console.log(allFavoris)
 
   const handleSignOut = async () => {
     setIsSigningOut(true)
@@ -458,12 +474,42 @@ export const Account: React.FC = () => {
                 />
                 <div className='bg-luxury-gray-100 p-6 rounded-xl border border-dashed border-luxury-gray-300'>
                   <p className='text-sm text-luxury-gray-600'>
-                    <span className='font-semibold text-luxury-red'>
-                      Fonctionnalité à venir :
-                    </span>{' '}
                     Retrouvez ici tous les articles que vous avez ajoutés à
                     votre liste de souhaits.
                   </p>
+                  <div className='mt-3 mb-3'>
+                    {allFavoris.length > 0 ? (
+                      allFavoris.map((fav, index) => {
+                        return (
+                          <Link
+                            title={`${fav.product.name}`}
+                            to={`/product/${fav.product.id}`}
+                            key={fav.product.id}
+                            className='flex items-center justify-between bg-luxury-gray-900 p-4 rounded-xl border border-luxury-gray-800'
+                          >
+                            {/* Nom et description */}
+                            <div className='flex flex-col mr-4'>
+                              <h3 className='text-luxury-white font-semibold'>
+                                {fav.product.name}
+                              </h3>
+                              <p className='text-luxury-gray-300 text-sm line-clamp-2'>
+                                {fav.product.description}
+                              </p>
+                            </div>
+
+                            {/* Image */}
+                            <img
+                              src={fav.product.images[0]}
+                              alt={fav.product.name}
+                              className='w-20 h-20 object-cover rounded-lg'
+                            />
+                          </Link>
+                        )
+                      })
+                    ) : (
+                      <p>Aucun favoris</p>
+                    )}
+                  </div>
                   <Link
                     to='/shop'
                     className='mt-3 inline-block text-luxury-red hover:underline text-sm'
