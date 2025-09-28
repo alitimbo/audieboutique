@@ -416,4 +416,69 @@ export class ProductService {
       throw error
     }
   }
+
+  static async getFavorisByUserId (userId: string): Promise<any> {
+    try {
+      const { data, error } = await supabase
+        .from('favoris')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false }) // les plus récents d'abord
+
+      if (error) {
+        console.error('Erreur récupération favoris:', error)
+        throw error
+      }
+
+      return data
+    } catch (err) {
+      console.error('Erreur getFavorisByUserId service:', err)
+      throw err
+    }
+  }
+
+  static async addFavoris (userId: string, product: any): Promise<any> {
+    try {
+      const { data, error } = await supabase
+        .from('favoris')
+        .insert([
+          {
+            user_id: userId,
+            product: product
+            // etat et created_at ont déjà une valeur par défaut
+          }
+        ])
+        .select()
+
+      if (error) {
+        console.error('Erreur insertion favoris:', error)
+        throw error
+      }
+
+      return data[0]
+    } catch (err) {
+      console.error('Erreur addFavoris service:', err)
+      throw err
+    }
+  }
+
+  static async removeFavoris (userId: string, productId: string): Promise<any> {
+    try {
+      const { data, error } = await supabase
+        .from('favoris')
+        .delete()
+        .eq('user_id', userId)
+        .eq('product->>id', productId) // supprime le favori correspondant au productId
+
+      if (error) {
+        console.error('Erreur suppression favori:', error)
+        throw error
+      }
+
+      return data // retourne la ligne supprimée
+    } catch (err) {
+      console.error('Erreur removeFavoris service:', err)
+      throw err
+    }
+  }
 }

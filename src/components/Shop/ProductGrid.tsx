@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Product } from '../../types/product' // Assurez-vous que ce chemin est correct
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../../store/useCartStore'
 import { toast } from 'sonner'
+import { useAuthStore } from '../../store/useAuthStore'
+import { ProductService } from '../../services/productService'
 
 // La liste de produits statique n'est plus nécessaire ici
 // car les produits seront passés via les props.
@@ -18,6 +20,39 @@ interface ProductGridProps {
 export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   const navigate = useNavigate()
   const { addItem } = useCartStore()
+  const [allFavoris, setAllFavoris] = useState<any[]>([])
+  const { user, isAuthenticated } = useAuthStore()
+
+  const fetchUserFavoris = async () => {
+    if (user) {
+      const response = await ProductService.getFavorisByUserId(user.id)
+      if (response.length > 0) {
+        setAllFavoris(response)
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchUserFavoris()
+  }, [user])
+
+  const handleAddFavoris = async (productId: string) => {
+    const product = products.find(p => p.id === productId)
+    if (product && user) {
+      const response = await ProductService.addFavoris(user?.id, product)
+      setAllFavoris(prev => [...prev, response])
+      toast.success(`${product.name} ajouté au favoris`)
+    }
+  }
+
+  const handleRemoveFavoris = async (productId: string) => {
+    if (user) {
+      await ProductService.removeFavoris(user.id, productId)
+      setAllFavoris(prev => prev.filter(f => f.product.id !== productId))
+      toast.info('Produit retiré des favoris')
+    }
+  }
+
   const handleAddToCart = (productId: string) => {
     const product = products.find(p => p.id === productId)
     if (product) {
@@ -66,73 +101,90 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
           Aucun produit ne correspond à votre recherche.
         </p>
       ) : (
-        products.map(product => (
-          <motion.div
-            key={product.id}
-            variants={itemVariants}
-            whileHover={{ y: -5 }}
-            className='group bg-luxury-white rounded-3xl overflow-hidden border border-luxury-gray-200 hover:border-luxury-red transition-all duration-300 shadow-luxury'
-          >
-            {/* Product Image */}
-            <div className='relative overflow-hidden'>
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className='w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500'
-              />
+        products.map(product => {
+          const isFavoris = allFavoris.some(f => f.product.id === product.id)
 
-              {/* Hover Actions */}
-              <div className='absolute inset-0 bg-luxury-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3'>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => navigate(`/product/${product.id}`)}
-                  className='bg-luxury-white text-luxury-black p-2 rounded-full hover:bg-luxury-red hover:text-luxury-white transition-colors duration-200'
-                >
-                  <Eye className='w-4 h-4' />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => {}}
-                  className='bg-luxury-white text-luxury-black p-2 rounded-full hover:bg-luxury-red hover:text-luxury-white transition-colors duration-200'
-                >
-                  <Heart className='w-4 h-4' />
-                </motion.button>
-              </div>
-            </div>
+          return (
+            <motion.div
+              key={product.id}
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
+              className='group bg-luxury-white rounded-3xl overflow-hidden border border-luxury-gray-200 hover:border-luxury-red transition-all duration-300 shadow-luxury'
+            >
+              {/* Product Image */}
+              <div className='relative overflow-hidden'>
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className='w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500'
+                />
 
-            {/* Product Info */}
-            <div className='p-6'>
-              <h3 className='text-luxury-black font-medium mb-2 group-hover:text-luxury-red transition-colors duration-200'>
-                {product.name}
-              </h3>
-
-              <div className='flex items-center justify-between mb-4'>
-                <div className='flex items-center space-x-2'>
-                  <span className='text-luxury-red font-bold text-lg'>
-                    {parseFloat(product.price as string).toFixed(2)}€
-                  </span>
-                  {product.original_price && (
-                    <span className='text-luxury-gray-400 line-through text-sm'>
-                      {parseFloat(product.original_price as string).toFixed(2)}€
-                    </span>
-                  )}
+                {/* Hover Actions */}
+                <div className='absolute inset-0 bg-luxury-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-3'>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    className='bg-luxury-white text-luxury-black p-2 rounded-full hover:bg-luxury-red hover:text-luxury-white transition-colors duration-200'
+                  >
+                    <Eye className='w-4 h-4' />
+                  </motion.button>
+                  {isAuthenticated && user ? (
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() =>
+                        isFavoris
+                          ? handleRemoveFavoris(product.id)
+                          : handleAddFavoris(product.id)
+                      }
+                      className={`p-2 rounded-full transition-colors duration-200 ${
+                        isFavoris
+                          ? 'bg-luxury-red text-luxury-white'
+                          : 'bg-luxury-white text-luxury-black hover:bg-luxury-red hover:text-luxury-white'
+                      }`}
+                    >
+                      <Heart className='w-4 h-4' />
+                    </motion.button>
+                  ) : null}
                 </div>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleAddToCart(product.id)}
-                className='w-full bg-luxury-red text-luxury-white py-3 rounded-2xl font-medium hover:bg-red-700 transition-colors duration-200 flex items-center justify-center space-x-2'
-              >
-                <ShoppingCart className='w-4 h-4' />
-                <span className='text-xs'>Ajouter au panier</span>
-              </motion.button>
-            </div>
-          </motion.div>
-        ))
+              {/* Product Info */}
+              <div className='p-6'>
+                <h3 className='text-luxury-black font-medium mb-2 group-hover:text-luxury-red transition-colors duration-200'>
+                  {product.name}
+                </h3>
+
+                <div className='flex items-center justify-between mb-4'>
+                  <div className='flex items-center space-x-2'>
+                    <span className='text-luxury-red font-bold text-lg'>
+                      {parseFloat(product.price as string).toFixed(2)}€
+                    </span>
+                    {product.original_price && (
+                      <span className='text-luxury-gray-400 line-through text-sm'>
+                        {parseFloat(product.original_price as string).toFixed(
+                          2
+                        )}
+                        €
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleAddToCart(product.id)}
+                  className='w-full bg-luxury-red text-luxury-white py-3 rounded-2xl font-medium hover:bg-red-700 transition-colors duration-200 flex items-center justify-center space-x-2'
+                >
+                  <ShoppingCart className='w-4 h-4' />
+                  <span className='text-xs'>Ajouter au panier</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          )
+        })
       )}
     </motion.div>
   )
