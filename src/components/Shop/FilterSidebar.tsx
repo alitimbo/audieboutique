@@ -18,6 +18,7 @@ interface FilterSidebarProps {
   handleClearFilters: () => void
   isFilterSidebarOpen: boolean // Add mobile state prop
   setIsFilterSidebarOpen: (isOpen: boolean) => void // Add setter
+  onScroll: () => void
 }
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({
@@ -29,7 +30,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   handleFilterChange,
   handleClearFilters,
   isFilterSidebarOpen,
-  setIsFilterSidebarOpen
+  setIsFilterSidebarOpen,
+  onScroll
 }) => {
   const [isTagsOpen, setIsTagsOpen] = useState(true)
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(true)
@@ -87,7 +89,9 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                         type='radio'
                         name='tag'
                         checked={selectedTag === tag}
-                        onChange={() => handleFilterChange('tag', tag)}
+                        onChange={() => {
+                          handleFilterChange('tag', tag), onScroll
+                        }}
                         className='w-4 h-4 text-luxury-red border-luxury-gray-300 rounded focus:ring-luxury-red focus:ring-2'
                       />
                       <span className='text-luxury-gray-700 group-hover:text-luxury-black transition-colors duration-200'>

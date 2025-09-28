@@ -14,6 +14,7 @@ import {
   getOriginalCategoryNameWithSwitch
 } from '../utils/productUrl'
 import { useParams } from 'react-router-dom'
+import { scrollToGrid } from '../utils/scrollToGrid'
 
 export const Shop: React.FC = () => {
   const { products, loading, error, fetchProducts } = useProductStore()
@@ -27,6 +28,7 @@ export const Shop: React.FC = () => {
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false) // Mobile sidebar state
+  const gridRef = useRef<HTMLDivElement>(null)
 
   // State for sorting
   const [sortOption, setSortOption] = useState<string>('price-asc')
@@ -69,6 +71,14 @@ export const Shop: React.FC = () => {
       fetchProducts()
     }
   }, [fetchProducts, products.length])
+
+  const handleScroll = () => {
+    scrollToGrid(gridRef, 'animate-pulse', 3000)
+  }
+
+  useEffect(() => {
+    handleScroll()
+  }, [])
 
   const handleFilterChange = (filterType: string, value: any) => {
     switch (filterType) {
@@ -169,10 +179,11 @@ export const Shop: React.FC = () => {
               handleClearFilters={handleClearFilters}
               isFilterSidebarOpen={isFilterSidebarOpen}
               setIsFilterSidebarOpen={setIsFilterSidebarOpen}
+              onScroll={handleScroll}
             />
 
             {/* Main Content */}
-            <div className='flex-1 min-w-0'>
+            <div className='flex-1 min-w-0' ref={gridRef}>
               {/* Toolbar */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -223,6 +234,7 @@ export const Shop: React.FC = () => {
               </motion.div>
 
               {/* Products Grid - Now receives the filtered and sorted products */}
+
               <ProductGrid products={paginatedProducts} />
 
               {/* Le composant de pagination vient ici */}
