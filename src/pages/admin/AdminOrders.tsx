@@ -284,12 +284,23 @@ export const AdminOrders: React.FC = () => {
           </div>
         </div>
 
-        {/* En attente */}
+        {/* En retention */}
         <div className='bg-white rounded-lg p-4 shadow-sm border border-gray-200'>
           <div className='flex items-center'>
             <Clock className='w-8 h-8 text-yellow-500' />
             <div className='ml-3'>
               <p className='text-sm font-medium text-gray-600'>En attente</p>
+              <p className='text-xl font-bold text-gray-900'>{stats.pending}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* En attente */}
+        <div className='bg-white rounded-lg p-4 shadow-sm border border-gray-200'>
+          <div className='flex items-center'>
+            <Clock className='w-8 h-8 text-yellow-500' />
+            <div className='ml-3'>
+              <p className='text-sm font-medium text-gray-600'>Payées</p>
               <p className='text-xl font-bold text-gray-900'>{stats.paid}</p>
             </div>
           </div>
@@ -320,19 +331,21 @@ export const AdminOrders: React.FC = () => {
         </div>
 
         {/* Chiffre d'affaires */}
-        <div className='bg-white rounded-lg p-4 shadow-sm border border-gray-200'>
-          <div className='flex items-center'>
-            <DollarSign className='w-8 h-8 text-green-600' />
-            <div className='ml-3'>
-              <p className='text-sm font-medium text-gray-600'>
-                Chiffre d'affaires
-              </p>
-              <p className='text-xl font-bold text-gray-900'>
-                €{stats.totalRevenue.toFixed(2)}
-              </p>
+        {/*
+          <div className='bg-white rounded-lg p-4 shadow-sm border border-gray-200'>
+            <div className='flex items-center'>
+              <DollarSign className='w-8 h-8 text-green-600' />
+              <div className='ml-3'>
+                <p className='text-sm font-medium text-gray-600'>
+                  Chiffre d'affaires
+                </p>
+                <p className='text-xl font-bold text-gray-900'>
+                  €{stats.totalRevenue.toFixed(2)}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        */}
       </div>
 
       {/* Filtres et recherche */}

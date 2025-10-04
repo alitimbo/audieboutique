@@ -106,11 +106,7 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* En-tête */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
-          <p className="text-gray-600 mt-1">Aperçu de votre boutique</p>
-        </div>
+      <div className="flex items-center justify-end">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

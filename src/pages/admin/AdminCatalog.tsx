@@ -313,15 +313,7 @@ export const AdminCatalog: React.FC = () => {
   return (
     <div className='p-6'>
       {/* Header */}
-      <div className='flex items-center justify-between mb-6'>
-        <div>
-          <h1 className='text-3xl font-bold text-gray-900'>
-            Gestion du catalogue
-          </h1>
-          <p className='text-gray-600 mt-1'>
-            Gérez vos produits, stock et prix
-          </p>
-        </div>
+      <div className='flex items-center justify-end mb-6'>
         <motion.button
           onClick={handleCreateProduct}
           whileHover={{ scale: 1.02 }}
