@@ -474,14 +474,16 @@ export const AdminOrders: React.FC = () => {
                         >
                           <Eye className='w-4 h-4' />
                         </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className='text-gray-400 hover:text-blue-600 transition-colors'
-                          title='Modifier le statut'
-                        >
-                          <Edit className='w-4 h-4' />
-                        </motion.button>
+                        {/*
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className='text-gray-400 hover:text-blue-600 transition-colors'
+                            title='Modifier le statut'
+                          >
+                            <Edit className='w-4 h-4' />
+                          </motion.button>
+                        */}
                       </div>
                     </td>
                   </motion.tr>

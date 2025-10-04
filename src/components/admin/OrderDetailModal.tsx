@@ -17,6 +17,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 // Assurez-vous que cette importation correspond à l'emplacement réel
 import { adminServices, Address } from '../../services/adminServices'
 import { triggerPushNotification } from '../../utils/sendNotification'
+import { generateInvoicePDF } from '../../utils/generateInvoicePDF'
+import { generateInvoicePDFBlob } from '../../utils/generateInvoicePDFBlob'
 // --- Interfaces (À synchroniser avec le composant parent AdminOrders) ---
 
 interface ProductItem {
@@ -149,14 +151,22 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   // Fonction pour l'impression
   const handlePrintInvoice = () => {
     // Déclenche la boîte de dialogue d'impression
-    window.print()
+    if (order) {
+      generateInvoicePDF(order)
+    }
   }
 
   // Fonction de simulation pour renvoyer la facture
-  const handleResendInvoice = () => {
-    alert(
-      `Facture pour la commande #${order?.id} renvoyée à ${order?.customerEmail} (Simulation)`
-    )
+  const handleResendInvoice = async () => {
+    if (order) {
+      // Génère le PDF sous forme d'ArrayBuffer
+      const pdfArrayBuffer = generateInvoicePDFBlob(order)
+
+      // Transforme en Blob pour l’envoyer via fetch ou autre
+      const pdfBlob = new Blob([pdfArrayBuffer], { type: 'application/pdf' })
+
+      console.log(pdfBlob)
+    }
   }
 
   if (!order) return null
