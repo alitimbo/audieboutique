@@ -290,7 +290,7 @@ export const AdminOrders: React.FC = () => {
             <Clock className='w-8 h-8 text-yellow-500' />
             <div className='ml-3'>
               <p className='text-sm font-medium text-gray-600'>En attente</p>
-              <p className='text-xl font-bold text-gray-900'>{stats.pending}</p>
+              <p className='text-xl font-bold text-gray-900'>{stats.paid}</p>
             </div>
           </div>
         </div>
