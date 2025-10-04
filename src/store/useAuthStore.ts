@@ -10,7 +10,7 @@ interface AuthState {
   isLoading: boolean
   isAuthenticated: boolean
   isAdmin: boolean
-
+  isAgent: boolean
   // Actions
   signIn: (email: string, password: string) => Promise<void>
   signUp: (
@@ -36,6 +36,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       isAuthenticated: false,
       isAdmin: false,
+      isAgent: false,
 
       signIn: async (email: string, password: string) => {
         try {
@@ -50,6 +51,7 @@ export const useAuthStore = create<AuthState>()(
               profile,
               isAuthenticated: true,
               isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+              isAgent: profile?.role === 'agent',
               isLoading: false
             })
           }
@@ -76,6 +78,7 @@ export const useAuthStore = create<AuthState>()(
               profile,
               isAuthenticated: true,
               isAdmin: false, // Les nouveaux utilisateurs ne sont pas admin
+              isAgent: false,
               isLoading: false
             })
           }
@@ -99,6 +102,7 @@ export const useAuthStore = create<AuthState>()(
               profile,
               isAuthenticated: true,
               isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+              isAgent: profile?.role === 'agent',
               isLoading: false
             })
           }
@@ -139,6 +143,7 @@ export const useAuthStore = create<AuthState>()(
             profile: null,
             isAuthenticated: false,
             isAdmin: false,
+            isAgent: false,
             isLoading: false
           })
         } catch (error) {
@@ -191,6 +196,7 @@ export const useAuthStore = create<AuthState>()(
               profile,
               isAuthenticated: true,
               isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+              isAgent: profile?.role === 'agent',
               isLoading: false
             })
           } else {
@@ -199,6 +205,7 @@ export const useAuthStore = create<AuthState>()(
               profile: null,
               isAuthenticated: false,
               isAdmin: false,
+              isAgent: false,
               isLoading: false
             })
           }
@@ -208,6 +215,7 @@ export const useAuthStore = create<AuthState>()(
             profile: null,
             isAuthenticated: false,
             isAdmin: false,
+            isAgent: false,
             isLoading: false
           })
         }
@@ -228,7 +236,8 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         profile: state.profile,
         isAuthenticated: state.isAuthenticated,
-        isAdmin: state.isAdmin
+        isAdmin: state.isAdmin,
+        isAgent: state.isAgent
       })
     }
   )

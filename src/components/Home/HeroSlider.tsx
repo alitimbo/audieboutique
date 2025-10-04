@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import BannerOne from '../../images/banner_one.png'
+import BannerOne from '../../images/banner_one_op.png'
 import BannerTwo from '../../images/banner_two.png'
 
 interface Slide {
@@ -114,7 +114,7 @@ export const HeroSlider: React.FC = () => {
             <img
               src={currentSlideData.backgroundImage}
               alt={currentSlideData.title}
-              className='w-full h-full object-contain' // 👈 S'assure que l'image couvre le conteneur
+              className='w-full h-full object-cover' // 👈 S'assure que l'image couvre le conteneur
             />
           ) : (
             // Affiche le dégradé si l'image n'est pas définie
