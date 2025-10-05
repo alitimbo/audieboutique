@@ -14,8 +14,9 @@ export const triggerPushNotification = async (
   url?: string
 ) => {
   // ⚠️ Remplacez par votre URL d'Edge Function
-  const EDGE_FUNCTION_URL =
-    'https://izuogvbcskyxacjekmbh.supabase.co/functions/v1/send-notification'
+  const EDGE_FUNCTION_URL = `${
+    import.meta.env.VITE_SUPABASE_URL
+  }/functions/v1/send-notification`
 
   // Le payload attendu par votre Edge Function
   const requestBody = {

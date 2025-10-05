@@ -13,6 +13,7 @@ import { useAuthStore } from '../store/useAuthStore'
 import { toast } from 'sonner'
 import { CartServices } from '../services/cartServices'
 import { useNavigate } from 'react-router-dom'
+import { createCheckout } from '../lib/createCheckout'
 
 export const Cart: React.FC = () => {
   // Utilisez le store Zustand pour gérer l'état du panier
@@ -60,6 +61,7 @@ export const Cart: React.FC = () => {
     setIsCheckoutLoading(true)
     try {
       // Intégration Stripe ou autre passerelle de paiement
+      /*
       console.log('Proceeding to checkout with items from Zustand store:', {
         cartItems,
         itemCount,
@@ -69,6 +71,7 @@ export const Cart: React.FC = () => {
         address,
         user: isAuthenticated ? user?.id : null
       })
+        */
       if (user?.id) {
         const response = await CartServices.checkout(
           user.id,
@@ -81,10 +84,9 @@ export const Cart: React.FC = () => {
         )
         if (response.success) {
           //Logique ouverture du checkout
-          
-          toast.success('Commande réussie')
-          //cartStore.clearCart()
-          //setTimeout(() => navigate('/account'), 3000)
+          const data = response.data
+          const totalAmount = data.order_details.total
+          await createCheckout(data.id, data.user_id, totalAmount)
         }
       }
     } catch (error) {

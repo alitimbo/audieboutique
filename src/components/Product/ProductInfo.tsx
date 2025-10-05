@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   Star,
@@ -10,6 +10,10 @@ import {
   RotateCcw
 } from 'lucide-react'
 import { useCartStore } from '../../store/useCartStore'
+import { ProductService } from '../../services/productService'
+import { useProductStore } from '../../store/useProductStore'
+import { useAuthStore } from '../../store/useAuthStore'
+import { toast } from 'sonner'
 
 interface ProductInfoProps {
   product: {
@@ -27,16 +31,32 @@ interface ProductInfoProps {
 }
 
 export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+  const { isAuthenticated, user } = useAuthStore()
+  const { products } = useProductStore()
+  const [allFavoris, setAllFavoris] = useState<any[]>([])
+
   const [selectedColor, setSelectedColor] = useState({
     name: product.colors[0]?.name || '',
     value: product.colors[0]?.value || ''
   })
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || '')
   const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
   const [addedToCart, setAddedToCart] = useState(false)
 
   const { addItem } = useCartStore()
+
+  const fetchUserFavoris = async () => {
+    if (user) {
+      const response = await ProductService.getFavorisByUserId(user.id)
+      if (response.length > 0) {
+        setAllFavoris(response)
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchUserFavoris()
+  }, [])
 
   const discountPercentage = product.originalPrice
     ? Math.round(
@@ -45,7 +65,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     : 0
 
   const handleAddToCart = () => {
-    console.log(selectedColor)
+    //console.log(selectedColor)
     addItem(product as any, quantity, {
       size: selectedSize,
       color: selectedColor.name
@@ -54,11 +74,30 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     setTimeout(() => setAddedToCart(false), 2000)
   }
 
+  const handleAddFavoris = async (productId: string) => {
+    const product = products.find(p => p.id === productId)
+    if (product && user) {
+      const response = await ProductService.addFavoris(user?.id, product)
+      setAllFavoris(prev => [...prev, response])
+      toast.success(`${product.name} ajouté au favoris`)
+    }
+  }
+
+  const handleRemoveFavoris = async (productId: string) => {
+    if (user) {
+      await ProductService.removeFavoris(user.id, productId)
+      setAllFavoris(prev => prev.filter(f => f.product.id !== productId))
+      toast.info('Produit retiré des favoris')
+    }
+  }
+
   const handleBuyNow = () => {
     handleAddToCart()
     // Redirect to checkout
     window.location.href = '/checkout'
   }
+
+  const isFavoris = allFavoris.some(f => f.product.id === product.id)
 
   return (
     <motion.div
@@ -266,20 +305,24 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
             </span>
           </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsWishlisted(!isWishlisted)}
-            className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
-              isWishlisted
-                ? 'border-luxury-red bg-luxury-red text-luxury-white'
-                : 'border-luxury-gray-300 text-luxury-black hover:border-luxury-red'
-            }`}
-          >
-            <Heart
-              className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`}
-            />
-          </motion.button>
+          {isAuthenticated && user && (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() =>
+                isFavoris
+                  ? handleRemoveFavoris(product.id)
+                  : handleAddFavoris(product.id)
+              }
+              className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
+                isFavoris
+                  ? 'border-luxury-red bg-luxury-red text-luxury-white'
+                  : 'border-luxury-gray-300 text-luxury-black hover:border-luxury-red'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${isFavoris ? 'fill-current' : ''}`} />
+            </motion.button>
+          )}
         </div>
 
         {/*product.stock > 0 && (

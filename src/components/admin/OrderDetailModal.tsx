@@ -16,7 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 // Assurez-vous que cette importation correspond à l'emplacement réel
 import { adminServices, Address } from '../../services/adminServices'
-import { triggerPushNotification } from '../../utils/sendNotification'
+import { triggerPushNotification } from '../../lib/sendNotification'
 import { generateInvoicePDF } from '../../utils/generateInvoicePDF'
 import { generateInvoicePDFBlob } from '../../utils/generateInvoicePDFBlob'
 // --- Interfaces (À synchroniser avec le composant parent AdminOrders) ---

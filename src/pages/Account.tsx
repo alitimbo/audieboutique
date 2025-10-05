@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, Lock, LogOut, Heart, ShoppingBag, Loader2 } from 'lucide-react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { SEO } from '../components/ui/SEO'
 import { toast } from 'sonner'
 import { useAuthStore } from '../store/useAuthStore'
+import { useCartStore } from '../store/useCartStore'
 import { ProductService } from '../services/productService'
 import { orderService, Order } from '../lib/supabase' // Assurez-vous que orderService et Order sont exportés correctement
 
@@ -210,7 +211,10 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
       }
       try {
         const fetchedOrders = await orderService.getByUserId(userId)
-        setOrders(fetchedOrders)
+        const confirmedOrders = fetchedOrders.filter(
+          (order: any) => order.status !== 'pending'
+        )
+        setOrders(confirmedOrders)
       } catch (err) {
         console.error('Error fetching orders:', err)
         setError(
@@ -340,6 +344,9 @@ export const Account: React.FC = () => {
   const { user, profile, signOut, isAuthenticated, isLoading } = useAuthStore()
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [allFavoris, setAllFavoris] = useState<any[]>([])
+  const { clearCart } = useCartStore()
+  const [params] = useSearchParams()
+  const successCheckout = params.get('checkout-succeeded')
 
   // Redirection si non authentifié
   if (!isAuthenticated && !isLoading) {
@@ -367,6 +374,17 @@ export const Account: React.FC = () => {
   useEffect(() => {
     handleUserFavoris()
   }, [user])
+
+  const handleCheckoutSuccess = async () => {
+    if (successCheckout && successCheckout === 'true') {
+      clearCart()
+      toast.success('Votre commande a bien été effectué')
+    }
+  }
+
+  useEffect(() => {
+    handleCheckoutSuccess()
+  }, [])
 
   //console.log(allFavoris)
 

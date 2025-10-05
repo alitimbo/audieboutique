@@ -209,7 +209,7 @@ export const Header: React.FC = () => {
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
-            className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4'
+            className='fixed inset-0 bg-black/40 flex justify-center z-50 p-4 pt-10 sm:items-center'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -221,10 +221,15 @@ export const Header: React.FC = () => {
               exit={{ scale: 0.8, opacity: 0 }}
             >
               <button
-                onClick={() => setIsSearchOpen(false)}
-                className='absolute top-2 right-4 text-gray-500 hover:text-gray-700'
+                onClick={() => {
+                  setSearchTerm('')
+                  setIsSearchOpen(false)
+                }}
+                // MODIFIÉ : Ajout de classes pour le fond gris, l'arrondi, le centrage (flex) et le redimensionnement du bouton.
+                className='absolute top-0 right-0 text-gray-700 hover:text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-150'
               >
-                <X className='w-5 h-5' />
+                <X className='w-4 h-4' />{' '}
+                {/* L'icône X est légèrement réduite (w-4 h-4) pour mieux s'intégrer au cercle de 8x8 */}
               </button>
 
               <input
@@ -232,7 +237,7 @@ export const Header: React.FC = () => {
                 value={searchTerm}
                 onChange={e => handleSearch(e.target.value)}
                 placeholder='Rechercher un article...'
-                className='w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-luxury-red'
+                className='w-full border border-gray-300 rounded-lg p-3 mt-5 mb-4 focus:outline-none focus:ring-2 focus:ring-luxury-red'
               />
 
               <div className='max-h-96 overflow-y-auto'>
@@ -262,7 +267,9 @@ export const Header: React.FC = () => {
                   ))
                 ) : (
                   <p className='text-gray-400 text-center mt-5'>
-                    Aucun article trouvé
+                    {searchTerm.length > 0
+                      ? 'Aucun article trouvé'
+                      : 'Rechercher...'}
                   </p>
                 )}
               </div>

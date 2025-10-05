@@ -10,18 +10,20 @@ export class CartServices {
     subtotal: any,
     total: any
   ): Promise<any> {
-    const { data, error } = await supabase.from('orders').insert({
-      user_id: userId,
-      address_id: address,
-      order_details: { cartItems, itemCount, shipping, subtotal, total }
-    })
+    const { data, error } = await supabase
+      .from('orders')
+      .insert({
+        user_id: userId,
+        address_id: address,
+        order_details: { cartItems, itemCount, shipping, subtotal, total }
+      })
+      .select()
 
     if (error) {
       console.log(error)
-      throw error
-      return { success: false }
+      throw new Error('Failed to add order')
     }
 
-    return { success: true }
+    return { success: true, data: data[0] }
   }
 }
