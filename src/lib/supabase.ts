@@ -24,8 +24,9 @@ export interface User {
   email: string
   full_name: string
   provider: string
-  role: 'admin' | 'client' | 'commercial' // 👈 Changement de la colonne et du type
+  role: 'admin' | 'client' | 'agent' // 👈 Changement de la colonne et du type
   created_at: string
+  is_active: boolean
 }
 
 export interface Order {
@@ -197,6 +198,38 @@ export const authService = {
     return data
   },
 
+  async signUpAgent (
+    email: string,
+    password: string,
+    userData: { full_name: string }
+  ) {
+    // 1. Création de l'utilisateur dans Supabase Auth
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: userData
+      }
+    })
+
+    if (error) throw error
+
+    // 2. Insertion dans la table 'users' avec le rôle 'agent'
+    if (data.user) {
+      const { error: userError } = await supabase.from('users').insert({
+        id: data.user.id,
+        email: data.user.email,
+        full_name: userData.full_name,
+        provider: 'email',
+        role: 'agent' // 👈 RÔLE SPÉCIFIQUE
+      })
+
+      if (userError) throw userError
+    }
+
+    return data
+  },
+
   async signIn (email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -207,6 +240,7 @@ export const authService = {
     return data
   },
 
+  // Dans authService
   async adminSignIn (email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -215,12 +249,12 @@ export const authService = {
 
     if (error) throw error
 
-    // Vérifier si l'utilisateur est admin
+    // Vérifier si l'utilisateur est admin ou agent
     if (data.user) {
       try {
         const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('role') // 👈 Changement de la colonne
+          .select('role')
           .eq('id', data.user.id)
           .single()
 
@@ -230,18 +264,27 @@ export const authService = {
             console.log('Admin par défaut détecté, connexion autorisée')
             return data
           }
-          console.error('Erreur lors de la vérification admin:', userError)
+          console.error(
+            'Erreur lors de la vérification des permissions:',
+            userError
+          )
           await supabase.auth.signOut()
           throw new Error('Erreur de vérification des permissions.')
         }
 
-        if (userData?.role !== 'admin') {
-          // 👈 Changement de la colonne et de la valeur
+        // --- MODIFICATION CLÉ ICI ---
+        // Vérifier si le rôle est ni 'admin' NI 'agent'
+        const isAuthorized =
+          userData?.role === 'admin' || userData?.role === 'agent'
+
+        if (!isAuthorized) {
           await supabase.auth.signOut()
           throw new Error(
-            'Accès non autorisé. Seuls les administrateurs peuvent se connecter.'
+            // Mise à jour du message d'erreur pour refléter les deux rôles autorisés
+            'Accès non autorisé. Seuls les administrateurs et les agents peuvent se connecter.'
           )
         }
+        // --- FIN DE LA MODIFICATION CLÉ ---
       } catch (err) {
         console.error('Erreur dans adminSignIn:', err)
         await supabase.auth.signOut()

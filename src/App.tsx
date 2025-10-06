@@ -45,7 +45,7 @@ import AdminResetPassword from './pages/admin/AdminResetPassword'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminCatalog from './pages/admin/AdminCatalog'
 import AdminOrders from './pages/admin/AdminOrders'
-import AdminClients from './pages/admin/AdminClients'
+import AdminUsers from './pages/admin/AdminUsers'
 import AdminSettings from './pages/admin/AdminSettings'
 import AdminLayout from './components/admin/AdminLayout'
 import ProtectedAdminRoute from './components/admin/ProtectedAdminRoute'
@@ -117,14 +117,14 @@ function App () {
           />
 
           <Route
-            path='/admin/clients'
+            path='/admin/utilisateurs'
             element={
               <ProtectedAdminRoute>
                 <AdminLayout
-                  title='Gestion des clients'
-                  subtitle='Gérez votre base de clients et administrateurs'
+                  title='Gestion des utilisateurs'
+                  subtitle='Gérez vos utilisateurs'
                 >
-                  <AdminClients />
+                  <AdminUsers />
                 </AdminLayout>
               </ProtectedAdminRoute>
             }

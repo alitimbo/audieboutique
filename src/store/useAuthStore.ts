@@ -18,6 +18,12 @@ interface AuthState {
     password: string,
     userData: { full_name: string }
   ) => Promise<void>
+
+  signUpAgent: (
+    email: string,
+    password: string,
+    userData: { full_name: string }
+  ) => Promise<void>
   adminSignIn: (email: string, password: string) => Promise<void>
   resetPassword: (email: string) => Promise<void>
   updatePassword: (password: string) => Promise<void>
@@ -45,15 +51,18 @@ export const useAuthStore = create<AuthState>()(
 
           if (user) {
             const profile = await authService.getUserProfile(user.id)
-
-            set({
-              user,
-              profile,
-              isAuthenticated: true,
-              isAdmin: profile?.role === 'admin', // 👈 Mise à jour
-              isAgent: profile?.role === 'agent',
-              isLoading: false
-            })
+            if (profile.is_active === true) {
+              set({
+                user,
+                profile,
+                isAuthenticated: true,
+                isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+                isAgent: profile?.role === 'agent',
+                isLoading: false
+              })
+            } else {
+              await authService.signOut()
+            }
           }
         } catch (error) {
           set({ isLoading: false })
@@ -72,7 +81,6 @@ export const useAuthStore = create<AuthState>()(
 
           if (user) {
             const profile = await authService.getUserProfile(user.id)
-
             set({
               user,
               profile,
@@ -89,6 +97,42 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      signUpAgent: async (
+        email: string,
+        password: string,
+        userData: { full_name: string }
+      ) => {
+        try {
+          set({ isLoading: true })
+          // Utilisation du nouveau service pour l'inscription d'un agent
+          const { user } = await authService.signUpAgent(
+            email,
+            password,
+            userData
+          )
+
+          if (user) {
+            // Récupérer le profile (qui devrait avoir le rôle 'agent')
+            const profile = await authService.getUserProfile(user.id)
+
+            /*
+            set({
+              user,
+              profile,
+              isAuthenticated: true,
+              isAdmin: profile?.role === 'admin',
+              isAgent: profile?.role === 'agent', // Doit être TRUE ici
+              isLoading: false
+            })
+              */
+          }
+        } catch (error) {
+          set({ isLoading: false })
+          console.error('Agent Signup error:', error)
+          throw error
+        }
+      },
+
       adminSignIn: async (email: string, password: string) => {
         try {
           set({ isLoading: true })
@@ -97,18 +141,25 @@ export const useAuthStore = create<AuthState>()(
           if (user) {
             const profile = await authService.getUserProfile(user.id)
 
-            set({
-              user,
-              profile,
-              isAuthenticated: true,
-              isAdmin: profile?.role === 'admin', // 👈 Mise à jour
-              isAgent: profile?.role === 'agent',
-              isLoading: false
-            })
+            if (profile.is_active === true) {
+              set({
+                user,
+                profile,
+                isAuthenticated: true,
+                isAdmin: profile?.role === 'admin', // 👈 Mise à jour
+                isAgent: profile?.role === 'agent',
+                isLoading: false
+              })
+
+              return profile
+            } else {
+              set({ isLoading: false })
+              await authService.signOut()
+            }
           }
         } catch (error) {
           set({ isLoading: false })
-          throw error
+          throw new Error('Identifiant ou mot de passe invalide')
         }
       },
 

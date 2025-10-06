@@ -76,4 +76,34 @@ export class adminServices {
     // Si vous souhaitez retourner les données mises à jour
     return data
   }
+
+  static async getAllUsers (): Promise<any> {
+    const { data, error } = await supabase.from('users').select('*')
+    if (error) {
+      console.log(error)
+      throw new Error('Failed to fetch users')
+    }
+
+    return data
+  }
+
+  static async toggleUserActiveStatus (
+    userId: string,
+    isActive: boolean
+  ): Promise<any> {
+    // Assurez-vous que le champ dans votre base de données s'appelle bien 'is_active'
+    const { data, error } = await supabase
+      .from('users')
+      .update({ is_active: isActive }) // Mettre à jour l'état actif/inactif
+      .eq('id', userId) // Pour l'utilisateur spécifique
+      .select() // Retourner la ligne mise à jour
+
+    if (error) {
+      console.error('Erreur Supabase lors du basculement du statut:', error)
+      throw new Error("Impossible de mettre à jour le statut de l'utilisateur.")
+    }
+
+    // Retourne l'utilisateur mis à jour (la première entrée du tableau)
+    return data ? data[0] : null
+  }
 }

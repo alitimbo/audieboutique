@@ -14,6 +14,11 @@ export const AdminLogin: React.FC = () => {
   const { adminSignIn } = useAuthStore()
   const navigate = useNavigate()
 
+  type AdminSignInResponse = {
+    role: 'agent' | 'admin'
+    // add other properties if needed
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -24,10 +29,16 @@ export const AdminLogin: React.FC = () => {
 
     try {
       setIsLoading(true)
-      await adminSignIn(email, password)
+      const response = (await adminSignIn(email, password)) as
+        | AdminSignInResponse
+        | undefined
+      if (response?.role === 'agent') {
+        navigate('/admin/catalog')
+      } else if (response?.role === 'admin') {
+        navigate('/admin/dashboard')
+      }
 
-      navigate('/admin/dashboard')
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.reload(), 1000)
     } catch (error: any) {
       toast.error(error.message || 'Erreur lors de la connexion')
     } finally {
