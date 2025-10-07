@@ -55,10 +55,9 @@ export const ProductDetail: React.FC = () => {
     <>
       <SEO
         title={product.name}
-        description={`${product.name} - ${product.description.substring(
-          0,
-          160
-        )}...`}
+        description={`${product.name} - ${
+          product.description ? product.description.substring(0, 160) : ''
+        }...`}
         keywords={`${product.name}, ${product.tags?.join(', ') || ''}, ${
           product.category || ''
         },Martinique, mode, luxe, boutique, audie boutique`}

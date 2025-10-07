@@ -158,14 +158,37 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   // Fonction de simulation pour renvoyer la facture
   const handleResendInvoice = async () => {
-    if (order) {
-      // Génère le PDF sous forme d'ArrayBuffer
+    if (!order) return
+
+    try {
+      // 1️⃣ Génère le PDF sous forme d'ArrayBuffer
       const pdfArrayBuffer = generateInvoicePDFBlob(order)
 
-      // Transforme en Blob pour l’envoyer via fetch ou autre
+      // 2️⃣ Convertit en Blob
       const pdfBlob = new Blob([pdfArrayBuffer], { type: 'application/pdf' })
 
-      console.log(pdfBlob)
+      // 3️⃣ Crée un FormData pour envoyer à la fonction Edge
+      const formData = new FormData()
+      formData.append('customerId', order.customerId)
+      formData.append('invoice', pdfBlob, `invoice-${order.id}.pdf`)
+
+      // 4️⃣ Envoie la requête vers l’Edge Function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invoice`,
+        {
+          method: 'POST',
+          headers: {},
+          body: formData
+        }
+      )
+
+      // 5️⃣ Vérifie la réponse
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Erreur d’envoi du PDF')
+
+      console.log('Facture envoyée avec succès ✅', data)
+    } catch (error) {
+      console.error('Erreur lors de l’envoi de la facture :', error)
     }
   }
 
