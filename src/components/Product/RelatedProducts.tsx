@@ -129,9 +129,9 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
                     <span className='text-luxury-red font-bold text-xl'>
                       {product.price.toFixed(2)}€
                     </span>
-                    {product.originalPrice && (
+                    {product.original_price && (
                       <span className='text-luxury-gray-400 line-through text-sm'>
-                        {product.originalPrice.toFixed(2)}€
+                        {product.original_price.toFixed(2)}€
                       </span>
                     )}
                   </div>

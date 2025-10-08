@@ -134,6 +134,8 @@ export class ProductService {
     try {
       console.log("🆕 Création d'un nouveau produit:", productData)
 
+      console.log(productData)
+
       const newProduct = {
         ...productData,
         archived: false,

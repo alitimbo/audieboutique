@@ -25,7 +25,9 @@ const slides: Slide[] = [
       'Découvrez nos collections raffinées, inspirées par la beauté des Caraïbes.',
     cta: 'Explorer nos collections',
     ctaLink: '/shop',
-    backgroundImage: BannerOne
+    //backgroundImage: BannerOne
+    backgroundClass:
+      'bg-gradient-to-br from-luxury-gray-900 via-luxury-black to-luxury-red/10'
   },
   /*
   {

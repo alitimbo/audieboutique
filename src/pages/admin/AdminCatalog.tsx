@@ -188,6 +188,7 @@ export const AdminCatalog: React.FC = () => {
     try {
       if (formMode === 'create') {
         await ProductService.createProduct(productData)
+        console.log(productData)
         toast.success('Produit créé avec succès')
         await loadProducts() // Recharger la liste
       } else if (selectedProduct) {
@@ -504,9 +505,9 @@ export const AdminCatalog: React.FC = () => {
                       <span className='font-medium'>
                         {product.price.toFixed(2)} €
                       </span>
-                      {product.originalPrice && (
+                      {product.original_price && (
                         <span className='text-gray-500 line-through ml-2'>
-                          {product.originalPrice.toFixed(2)} €
+                          {product.original_price.toFixed(2)} €
                         </span>
                       )}
                     </div>

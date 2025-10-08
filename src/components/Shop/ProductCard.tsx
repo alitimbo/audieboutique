@@ -7,7 +7,7 @@ export interface Product {
   id: string
   name: string
   price: number
-  originalPrice?: number
+  original_price?: number
   image: string
   category: string
   colors: string[]
@@ -31,9 +31,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onToggleWishlist,
   isInWishlist
 }) => {
-  const discountPercentage = product.originalPrice
+  const discountPercentage = product.original_price
     ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
+        ((product.original_price - product.price) / product.original_price) * 100
       )
     : 0
 
@@ -195,9 +195,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className='text-luxury-red font-bold text-xl'>
               {product.price.toFixed(2)}€
             </span>
-            {product.originalPrice && (
+            {product.original_price && (
               <span className='text-luxury-gray-400 line-through text-sm'>
-                {product.originalPrice.toFixed(2)}€
+                {product.original_price.toFixed(2)}€
               </span>
             )}
           </div>

@@ -20,7 +20,7 @@ interface ProductInfoProps {
     id: string
     name: string
     price: number
-    originalPrice?: number
+    original_price?: number
     category: string
     tags: string[]
     colors: { name: string; value: string }[]
@@ -58,9 +58,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     fetchUserFavoris()
   }, [])
 
-  const discountPercentage = product.originalPrice
+  const discountPercentage = product.original_price
     ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
+        ((product.original_price - product.price) / product.original_price) * 100
       )
     : 0
 
@@ -163,10 +163,10 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         <span className='text-4xl font-bold text-luxury-red'>
           {product.price.toFixed(2)}€
         </span>
-        {product.originalPrice && (
+        {product.original_price && (
           <>
             <span className='text-2xl text-luxury-gray-400 line-through'>
-              {product.originalPrice.toFixed(2)}€
+              {product.original_price.toFixed(2)}€
             </span>
             <span className='bg-luxury-red text-luxury-white text-sm font-medium px-3 py-1 rounded-full'>
               -{discountPercentage}%

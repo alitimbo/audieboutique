@@ -251,7 +251,7 @@ export const Cart: React.FC = () => {
                           id: item.id,
                           name: item.product.name,
                           price: parseFloat(item.product.price as string), // Assurez-vous que le prix est un nombre
-                          originalPrice: item.product.original_price
+                          original_price: item.product.original_price
                             ? parseFloat(item.product.original_price as string)
                             : null,
                           image: item.product.images[0],

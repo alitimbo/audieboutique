@@ -7,7 +7,7 @@ export interface CartItemData {
   id: string
   name: string
   price: number
-  originalPrice?: number
+  original_price?: number
   image: string
   size?: string
   color?: string
@@ -29,8 +29,8 @@ export const CartItem: React.FC<CartItemProps> = ({
   onMoveToWishlist
 }) => {
   const subtotal = item.price * item.quantity
-  const originalSubtotal = item.originalPrice
-    ? item.originalPrice * item.quantity
+  const originalSubtotal = item.original_price
+    ? item.original_price * item.quantity
     : null
   //console.log('Rendering CartItem:', item);
 
@@ -102,9 +102,9 @@ export const CartItem: React.FC<CartItemProps> = ({
               <span className='text-xl font-bold text-luxury-red'>
                 {item.price.toFixed(2)}€
               </span>
-              {item.originalPrice && (
+              {item.original_price && (
                 <span className='text-sm text-luxury-gray-400 line-through'>
-                  {item.originalPrice.toFixed(2)}€
+                  {item.original_price.toFixed(2)}€
                 </span>
               )}
             </div>

@@ -3,7 +3,7 @@ export interface Product {
   name: string
   description: string
   price: number
-  originalPrice?: number
+  original_price?: number
   category: string
   images: string[]
   stock: number
@@ -30,7 +30,7 @@ export interface ProductFormData {
   name: string
   description: string
   price: number
-  originalPrice?: number
+  original_price?: number
   category: string
   images: string[]
   stock: number
