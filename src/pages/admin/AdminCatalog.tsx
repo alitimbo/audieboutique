@@ -124,7 +124,7 @@ export const AdminCatalog: React.FC = () => {
       filtered = filtered.filter(
         product =>
           product.name.toLowerCase().includes(searchTerm) ||
-          product.description.toLowerCase().includes(searchTerm) ||
+          //product.description.toLowerCase().includes(searchTerm) ||
           product.category.toLowerCase().includes(searchTerm)
       )
     }
@@ -479,6 +479,7 @@ export const AdminCatalog: React.FC = () => {
                     <div className='flex items-center'>
                       <div className='flex-shrink-0 h-12 w-12'>
                         <img
+                          loading='lazy'
                           className='h-12 w-12 rounded-lg object-cover'
                           src={product.images[0] || '/api/placeholder/48/48'}
                           alt={product.name}
