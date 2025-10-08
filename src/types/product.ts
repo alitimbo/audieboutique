@@ -63,7 +63,7 @@ export interface StockMovementDb {
 export const PRODUCT_CATEGORIES = [
   'Spécial Fêtes',
   'Femmes',
-  //'Corsets & Gaines',
+  'Corsets & Gaines',
   'Maillots de bain',
   'Sacs & portes monnaies',
   'Bijoux',

@@ -114,6 +114,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
               {/* Product Image */}
               <div className='relative overflow-hidden'>
                 <img
+                  loading='lazy'
                   src={product.images[0]}
                   alt={product.name}
                   className='w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500'
