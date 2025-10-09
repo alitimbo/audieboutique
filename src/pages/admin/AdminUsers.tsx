@@ -696,7 +696,7 @@ export const AdminUsers: React.FC = () => {
       <hr />
 
       {/* --- Statistiques --- */}
-      <div className='grid grid-cols-2 md:grid-cols-5 gap-4'>
+      <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
         <StatCard
           Icon={Users}
           title='Total Clients'
@@ -709,12 +709,14 @@ export const AdminUsers: React.FC = () => {
           value={stats.totalAgents}
           color='text-yellow-600'
         />
-        <StatCard
-          Icon={Crown}
-          title='Administrateurs'
-          value={stats.totalAdmins}
-          color='text-purple-500'
-        />
+        {/*
+          <StatCard
+            Icon={Crown}
+            title='Administrateurs'
+            value={stats.totalAdmins}
+            color='text-purple-500'
+          />
+        */}
         <StatCard
           Icon={UserCheck}
           title='Clients actifs'

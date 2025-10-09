@@ -13,12 +13,16 @@ import {
   DollarSign,
   Calendar,
   User,
-  CreditCard
+  CreditCard,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 // Assurez-vous que ces imports sont bien définis dans votre projet
 import { adminServices } from '../../services/adminServices'
 import { LoadingData } from '../../components/admin/LoadingData'
 import { OrderDetailModal } from '../../components/admin/OrderDetailModal'
+
+const ORDERS_PER_PAGE = 30
 
 // --- Interfaces de Données Brutes (Basées sur votre modèle) ---
 
@@ -75,6 +79,9 @@ export const AdminOrders: React.FC = () => {
   >('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null)
+
+  // ************ États de la Pagination ************
+  const [currentPage, setCurrentPage] = useState(1)
 
   // Service pour récupérer les données (Assurez-vous qu'il correspond)
   const fetchData = async () => {
@@ -149,7 +156,28 @@ export const AdminOrders: React.FC = () => {
 
       return matchesSearch && matchesStatus
     })
-  }, [mappedOrders, searchTerm, selectedStatus])
+  }, [mappedOrders, searchTerm, selectedStatus]) // 3. LOGIQUE DE PAGINATION // --------------------------------------------------------
+
+  // --------------------------------------------------------
+  const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE)
+
+  const paginatedOrders: OrderDisplay[] = useMemo(() => {
+    const startIndex = (currentPage - 1) * ORDERS_PER_PAGE
+    return filteredOrders.slice(startIndex, startIndex + ORDERS_PER_PAGE)
+  }, [filteredOrders, currentPage])
+
+  // Réinitialiser la page à 1 après le filtrage
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filteredOrders.length]) // Déclencher quand le nombre de résultats filtrés change // Ajuster la page courante si elle dépasse le nouveau nombre total de pages
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages)
+    } else if (currentPage === 0 && totalPages > 0) {
+      setCurrentPage(1)
+    }
+  }, [totalPages, currentPage])
 
   // --------------------------------------------------------
   // 3. CALCUL DES STATISTIQUES
@@ -412,7 +440,7 @@ export const AdminOrders: React.FC = () => {
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-gray-200'>
-              {filteredOrders.map((order, index) => {
+              {paginatedOrders.map((order, index) => {
                 const statusConfig = getStatusConfig(order.status)
                 const StatusIcon = statusConfig.icon
 
@@ -505,7 +533,103 @@ export const AdminOrders: React.FC = () => {
             </tbody>
           </table>
         </div>
+        {/* ************ Pagination Component ************ */}
+        {filteredOrders.length > ORDERS_PER_PAGE && totalPages > 1 && (
+          <div className='flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6'>
+            <div className='flex flex-1 justify-between sm:hidden'>
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className='relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+              >
+                Précédent
+              </button>
 
+              <button
+                onClick={() =>
+                  setCurrentPage(prev => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className='relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+              >
+                Suivant
+              </button>
+            </div>
+
+            <div className='hidden sm:flex sm:flex-1 sm:items-center sm:justify-between'>
+              <div>
+                <p className='text-sm text-gray-700'>
+                  Affichage de
+                  <span className='font-medium'>
+                    {(currentPage - 1) * ORDERS_PER_PAGE + 1}
+                  </span>
+                  à
+                  <span className='font-medium'>
+                    {Math.min(
+                      currentPage * ORDERS_PER_PAGE,
+                      filteredOrders.length
+                    )}
+                  </span>
+                  sur
+                  <span className='font-medium'>{filteredOrders.length}</span>
+                  résultats
+                </p>
+              </div>
+
+              <div>
+                <nav
+                  className='isolate inline-flex -space-x-px rounded-md shadow-sm'
+                  aria-label='Pagination'
+                >
+                  <button
+                    onClick={() =>
+                      setCurrentPage(prev => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                    className='relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <span className='sr-only'>Précédent</span>
+
+                    <ChevronLeft className='h-5 w-5' aria-hidden='true' />
+                  </button>
+                  {/* Affichage des numéros de page (simplifié) */}
+
+                  {Array.from({ length: totalPages }, (_, index) => {
+                    const pageNumber = index + 1
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold 
+     ${
+       currentPage === pageNumber
+         ? 'z-10 bg-accent-gold/20 text-accent-gold focus:outline-2'
+         : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+     } 
+     focus:z-20 focus:outline-offset-0 transition-colors duration-150`}
+                      >
+                        {pageNumber}
+                      </button>
+                    )
+                  })}
+
+                  <button
+                    onClick={() =>
+                      setCurrentPage(prev => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    className='relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <span className='sr-only'>Suivant</span>
+
+                    <ChevronRight className='h-5 w-5' aria-hidden='true' />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* ********************************************** */}
         {isModalOpen && selectedOrder && (
           <OrderDetailModal
             order={selectedOrder}
@@ -515,7 +639,6 @@ export const AdminOrders: React.FC = () => {
             statusOptions={statusOptions}
           />
         )}
-
         {filteredOrders.length === 0 && (
           <div className='text-center py-12'>
             <Package className='w-12 h-12 text-gray-300 mx-auto mb-4' />

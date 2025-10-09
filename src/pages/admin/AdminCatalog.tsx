@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   Plus,
@@ -10,7 +10,9 @@ import {
   Package,
   Star,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -24,6 +26,9 @@ import { StockManager } from '../../components/admin/StockManager'
 import { ProductService } from '../../services/productService'
 
 // Les données sont maintenant chargées depuis Supabase via ProductService
+
+// Constante pour la taille de la page
+const PRODUCTS_PER_PAGE = 30
 
 export const AdminCatalog: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([])
@@ -42,6 +47,10 @@ export const AdminCatalog: React.FC = () => {
   const [isStockManagerOpen, setIsStockManagerOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
+
+  // ************ États de la Pagination ************
+  const [currentPage, setCurrentPage] = useState(1)
+  // **********************************************
 
   // Clés pour le sessionStorage
   const FORM_STORAGE_KEY = 'admin_product_form_data'
@@ -162,16 +171,48 @@ export const AdminCatalog: React.FC = () => {
     }
 
     if (filters.tag) {
-      filtered = filtered.filter(p => filters.tag !== null && p.tags?.includes(filters.tag))
+      filtered = filtered.filter(
+        p => filters.tag !== null && p.tags?.includes(filters.tag)
+      )
     }
     console.log(`📊 Produits filtrés: ${filtered.length}/${products.length}`)
     setFilteredProducts(filtered)
+
+    // ************ Réinitialiser la page à 1 après le filtrage ************
+    setCurrentPage(1)
+    // ********************************************************************
   }
 
   // Appliquer les filtres quand les produits ou filtres changent
   useEffect(() => {
     applyFilters()
   }, [products, filters])
+
+  // ************ Logique de la Pagination ************
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE)
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
+    return filteredProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE)
+  }, [filteredProducts, currentPage])
+
+  const goToNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages))
+  }
+
+  const goToPrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1))
+  }
+
+  // Ajuster la page courante si elle dépasse le nouveau nombre total de pages (e.g., après un changement de filtre)
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages)
+    } else if (currentPage === 0 && totalPages > 0) {
+      setCurrentPage(1)
+    }
+  }, [totalPages, currentPage])
+  // **********************************************
 
   // Product CRUD operations
   const handleCreateProduct = () => {
@@ -495,7 +536,7 @@ export const AdminCatalog: React.FC = () => {
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-gray-200'>
-              {filteredProducts.map(product => (
+              {paginatedProducts.map(product => (
                 <motion.tr
                   key={product.id}
                   initial={{ opacity: 0 }}
@@ -605,6 +646,95 @@ export const AdminCatalog: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* ************ Pagination Component ************ */}
+        {filteredProducts.length > PRODUCTS_PER_PAGE && totalPages > 1 && (
+          <div className='flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6'>
+            <div className='flex flex-1 justify-between sm:hidden'>
+              <button
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+                className='relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+              >
+                Précédent
+              </button>
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className='relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+              >
+                Suivant
+              </button>
+            </div>
+            <div className='hidden sm:flex sm:flex-1 sm:items-center sm:justify-between'>
+              <div>
+                <p className='text-sm text-gray-700'>
+                  Affichage de{' '}
+                  <span className='font-medium'>
+                    {(currentPage - 1) * PRODUCTS_PER_PAGE + 1}
+                  </span>{' '}
+                  à{' '}
+                  <span className='font-medium'>
+                    {Math.min(
+                      currentPage * PRODUCTS_PER_PAGE,
+                      filteredProducts.length
+                    )}
+                  </span>{' '}
+                  sur{' '}
+                  <span className='font-medium'>{filteredProducts.length}</span>{' '}
+                  résultats
+                </p>
+              </div>
+              <div>
+                <nav
+                  className='isolate inline-flex -space-x-px rounded-md shadow-sm'
+                  aria-label='Pagination'
+                >
+                  <button
+                    onClick={goToPrevPage}
+                    disabled={currentPage === 1}
+                    className='relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <span className='sr-only'>Précédent</span>
+                    <ChevronLeft className='h-5 w-5' aria-hidden='true' />
+                  </button>
+
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNumber = index + 1
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        aria-current={
+                          currentPage === pageNumber ? 'page' : undefined
+                        }
+                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold 
+                          ${
+                            currentPage === pageNumber
+                              ? 'z-10 bg-accent-gold/20 text-accent-gold focus:outline-2'
+                              : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+                          } 
+                          focus:z-20 focus:outline-offset-0 transition-colors duration-150`}
+                      >
+                        {pageNumber}
+                      </button>
+                    )
+                  })}
+
+                  <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className='relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <span className='sr-only'>Suivant</span>
+                    <ChevronRight className='h-5 w-5' aria-hidden='true' />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* ********************************************** */}
 
         {loading ? (
           <div className='text-center py-12'>

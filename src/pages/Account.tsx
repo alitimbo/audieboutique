@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/useAuthStore'
 import { useCartStore } from '../store/useCartStore'
 import { ProductService } from '../services/productService'
 import { orderService, Order } from '../lib/supabase' // Assurez-vous que orderService et Order sont exportés correctement
+import { generateInvoicePDF } from '../utils/generateInvoicePDF'
 
 // --- Composants Helpers pour la Structure et le Style ---
 
@@ -201,6 +202,8 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
   const [orders, setOrders] = useState<any[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { profile } = useAuthStore()
+
   //console.log(orders)
 
   useEffect(() => {
@@ -319,17 +322,40 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
                 </p>
                 <ul className='list-disc list-inside ml-2 text-luxury-gray-600'>
                   {order.order_details.cartItems
-                    .slice(0, 3)
+                    .slice(0, 10)
                     .map((item: any, index: number) => (
                       <li key={index} className='truncate'>
                         {item.quantity} x{' '}
                         {item.product?.name || 'Article inconnu'}
                       </li>
                     ))}
-                  {order.order_details.cartItems.length > 3 && (
-                    <li>... et {order.items.length - 3} autres articles.</li>
+                  {order.order_details.cartItems.length > 10 && (
+                    <li>... et {order.items.length - 10} autres articles.</li>
                   )}
                 </ul>
+              </div>
+              <div className='pt-4'>
+                <button
+                  onClick={() =>
+                    generateInvoicePDF({
+                      id: order.id.slice(0, 8),
+                      orderId: order.id,
+                      customerName: profile?.full_name || 'email@gmail.com',
+                      customerEmail: profile?.email || 'Inconnu',
+                      total: order.order_details.total,
+                      createdAt: order.created_at,
+                      orderDetails: {
+                        cartItems: order.order_details.cartItems,
+                        subtotal: order.order_details.subtotal,
+                        shipping: order.order_details.shipping,
+                        total: order.order_details.total
+                      }
+                    })
+                  }
+                  className='mt-3 px-4 py-2 bg-luxury-red text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium'
+                >
+                  Télécharger la facture
+                </button>
               </div>
             </div>
           ))

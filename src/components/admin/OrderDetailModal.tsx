@@ -156,6 +156,8 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     }
   }
 
+  console.log(order)
+
   // Fonction de simulation pour renvoyer la facture
   const handleResendInvoice = async () => {
     if (!order) return
@@ -300,14 +302,16 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 </div>
 
                 {/* Renvoyer Facture */}
-                <motion.button
-                  onClick={handleResendInvoice}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className='flex items-center justify-center w-full md:w-auto p-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm'
-                >
-                  <Send className='w-4 h-4 mr-2' /> Renvoyer Facture
-                </motion.button>
+                {/*
+                  <motion.button
+                    onClick={handleResendInvoice}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className='flex items-center justify-center w-full md:w-auto p-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm'
+                  >
+                    <Send className='w-4 h-4 mr-2' /> Renvoyer Facture
+                  </motion.button>
+                */}
 
                 {/* Imprimer Facture */}
                 <motion.button
