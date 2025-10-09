@@ -58,7 +58,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
     if (product) {
       addItem(product, 1, {
         size: product.sizes ? product.sizes[0] : undefined,
-        color: product.colors ? product.colors[0].name : undefined
+        color: product.colors ? product.colors[0]?.name : undefined
       })
       toast.success(`${product.name} ajouté au panier`)
     }

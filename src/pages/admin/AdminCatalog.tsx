@@ -481,7 +481,7 @@ export const AdminCatalog: React.FC = () => {
                         <img
                           loading='lazy'
                           className='h-12 w-12 rounded-lg object-cover'
-                          src={product.images[0] || '/api/placeholder/48/48'}
+                          src={product.images[0] || 'https://izuogvbcskyxacjekmbh.supabase.co/storage/v1/object/public/product-images/products/pngtree-file-download-icon-image_1344394-removebg-preview.png'}
                           alt={product.name}
                         />
                       </div>

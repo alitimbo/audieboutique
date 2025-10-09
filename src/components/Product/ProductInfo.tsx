@@ -68,7 +68,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     //console.log(selectedColor)
     addItem(product as any, quantity, {
       size: selectedSize,
-      color: selectedColor.name
+      color: selectedColor?.name
     })
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
