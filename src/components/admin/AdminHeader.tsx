@@ -1,40 +1,40 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Bell, Search, Menu } from 'lucide-react';
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Bell, Search, Menu } from 'lucide-react'
 
 interface AdminHeaderProps {
-  title: string;
-  subtitle?: string;
-  onToggleSidebar?: () => void;
+  title: string
+  subtitle?: string
+  onToggleSidebar?: () => void
 }
 
-export const AdminHeader: React.FC<AdminHeaderProps> = ({ 
-  title, 
-  subtitle, 
-  onToggleSidebar 
+export const AdminHeader: React.FC<AdminHeaderProps> = ({
+  title,
+  subtitle,
+  onToggleSidebar
 }) => {
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-between">
+    <header className='bg-white border-b border-gray-200 px-6 py-4'>
+      <div className='flex items-center justify-between'>
         {/* Titre et bouton menu mobile */}
-        <div className="flex items-center space-x-4">
+        <div className='flex items-center space-x-4'>
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className='lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors'
           >
-            <Menu className="w-5 h-5 text-gray-600" />
+            <Menu className='w-5 h-5 text-gray-600' />
           </button>
-          
+
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+            <h1 className='text-2xl font-bold text-gray-900'>{title}</h1>
             {subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+              <p className='text-sm text-gray-600 mt-1'>{subtitle}</p>
             )}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center space-x-4">
+        <div className='flex items-center space-x-4'>
           {/* Barre de recherche */}
           {/*
             <div className="hidden md:flex items-center">
@@ -50,18 +50,20 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           */}
 
           {/* Notifications */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-          </motion.button>
+          {/*
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className='relative p-2 rounded-lg hover:bg-gray-100 transition-colors'
+            >
+              <Bell className='w-5 h-5 text-gray-600' />
+              <span className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full'></span>
+            </motion.button>
+          */}
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default AdminHeader;
+export default AdminHeader
