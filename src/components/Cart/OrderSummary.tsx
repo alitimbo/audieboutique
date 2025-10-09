@@ -112,7 +112,11 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           <p className='text-sm text-luxury-gray-500 mt-1'>TVA incluse</p>
         </div>
       </div>
-      {onError && <p className='text-sm text-luxury-red mt-1 mb-2 text-center'>{onError}</p>}
+      {onError && (
+        <p className='text-sm text-luxury-red mt-1 mb-2 text-center'>
+          {onError}
+        </p>
+      )}
 
       {/* Checkout Button */}
       <motion.button

@@ -51,6 +51,11 @@ export const Cart: React.FC = () => {
 
   // Logique de paiement
   const handleCheckout = async () => {
+    if (!isAuthenticated) {
+      setCheckoutError('Veuillez vous connecter ou créer un compte')
+      setTimeout(() => setCheckoutError(null), 4000)
+      return
+    }
     if (!address) {
       setCheckoutError(
         'Veuillez ajouter ou sélectionner une adresse de livraison'

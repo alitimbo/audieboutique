@@ -151,6 +151,7 @@ export const BestSellers: React.FC = () => {
                   className='w-full h-64 object-cover'
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.5 }}
+                  loading='lazy'
                 />
 
                 {/* Badge */}
