@@ -21,7 +21,7 @@ interface AuthSectionProps {
   onRegister: (email: string, password: string, name: string) => Promise<void>
   onGoogleLogin: () => Promise<void>
   onContinueAsGuest: () => void // Cette fonction ne sera plus utilisée dans le rendu, mais gardée dans l'interface
-  onSelectedAddress: (id: string) => void 
+  onSelectedAddress: (id: string) => void
 }
 
 export const AuthSection: React.FC<AuthSectionProps> = ({
@@ -142,10 +142,11 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
             </p>
             <button
               onClick={() => setOpenAddressModal(true)}
-              className='mt-2 text-luxury-red hover:underline text-sm'
+              className='mt-2 bg-luxury-red text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-luxury-red/90 transition-all duration-200 shadow-sm'
             >
               Ajouter une nouvelle adresse
             </button>
+
             <div className='mt-5'>
               {allAddress.map((res, index) => {
                 // Déterminer les classes CSS pour l'arrière-plan et la sélection par défaut

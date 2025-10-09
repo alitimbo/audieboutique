@@ -33,7 +33,8 @@ export const AdminCatalog: React.FC = () => {
     search: '',
     category: 'all',
     status: 'all',
-    featured: null
+    featured: null,
+    tag: null
   })
 
   // Modal states
@@ -160,6 +161,9 @@ export const AdminCatalog: React.FC = () => {
       )
     }
 
+    if (filters.tag) {
+      filtered = filtered.filter(p => filters.tag !== null && p.tags?.includes(filters.tag))
+    }
     console.log(`📊 Produits filtrés: ${filtered.length}/${products.length}`)
     setFilteredProducts(filtered)
   }
@@ -311,6 +315,8 @@ export const AdminCatalog: React.FC = () => {
     outOfStock: products.filter(p => p.stock === 0).length
   }
 
+  console.log(products.filter(prod => prod.tags.length > 0))
+
   return (
     <div className='p-6'>
       {/* Header */}
@@ -421,22 +427,43 @@ export const AdminCatalog: React.FC = () => {
             <option value='out_of_stock'>Rupture de stock</option>
           </select>
 
+          {/*
+            <select
+              value={
+                filters.featured === null ? 'all' : filters.featured.toString()
+              }
+              onChange={e =>
+                setFilters(prev => ({
+                  ...prev,
+                  featured:
+                    e.target.value === 'all' ? null : e.target.value === 'true'
+                }))
+              }
+              className='border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all'
+            >
+              <option value='all'>Tous les produits</option>
+              <option value='true'>En vedette</option>
+              <option value='false'>Non en vedette</option>
+            </select>
+          */}
+
           <select
-            value={
-              filters.featured === null ? 'all' : filters.featured.toString()
-            }
+            value={filters.tag || 'all'}
             onChange={e =>
               setFilters(prev => ({
                 ...prev,
-                featured:
-                  e.target.value === 'all' ? null : e.target.value === 'true'
+                tag: e.target.value === 'all' ? null : e.target.value
               }))
             }
             className='border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-gold/50 focus:border-accent-gold/50 transition-all'
           >
             <option value='all'>Tous les produits</option>
-            <option value='true'>En vedette</option>
-            <option value='false'>Non en vedette</option>
+            <option value='Nouveautés'>Nouveautés</option>
+            <option value='Soldes'>Soldes</option>
+            <option value='Collections'>Collections</option>
+            <option value='Exclusivités'>Exclusivités</option>
+            <option value='Meilleures ventes'>Meilleures ventes</option>
+            <option value='Promo'>Promo</option>
           </select>
         </div>
       </div>
@@ -481,7 +508,10 @@ export const AdminCatalog: React.FC = () => {
                         <img
                           loading='lazy'
                           className='h-12 w-12 rounded-lg object-cover'
-                          src={product.images[0] || 'https://izuogvbcskyxacjekmbh.supabase.co/storage/v1/object/public/product-images/products/pngtree-file-download-icon-image_1344394-removebg-preview.png'}
+                          src={
+                            product.images[0] ||
+                            'https://izuogvbcskyxacjekmbh.supabase.co/storage/v1/object/public/product-images/products/pngtree-file-download-icon-image_1344394-removebg-preview.png'
+                          }
                           alt={product.name}
                         />
                       </div>

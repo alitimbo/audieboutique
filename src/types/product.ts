@@ -47,6 +47,7 @@ export interface ProductFilters {
   category: string
   status: 'all' | 'active' | 'archived' | 'out_of_stock'
   featured: boolean | null
+  tag: string | null
 }
 
 export interface StockMovementDb {

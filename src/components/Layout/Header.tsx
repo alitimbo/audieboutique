@@ -259,6 +259,7 @@ export const Header: React.FC = () => {
                         </p>
                       </div>
                       <img
+                        loading='lazy'
                         src={product.images[0]}
                         alt={product.name}
                         className='w-20 h-20 object-cover rounded-lg'
