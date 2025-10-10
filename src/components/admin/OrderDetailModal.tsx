@@ -39,6 +39,7 @@ interface OrderDetails {
   customerName: string
   customerEmail: string
   total: number
+  is_shipping: boolean
   status:
     | 'pending'
     | 'paid'
@@ -156,7 +157,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     }
   }
 
-  console.log(order)
+  //console.log(order)
 
   // Fonction de simulation pour renvoyer la facture
   const handleResendInvoice = async () => {
@@ -353,32 +354,40 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             </div>
 
             {/* Section 2: Adresse de livraison */}
-            <div>
-              <h3 className='flex items-center text-xl font-semibold text-gray-900 mb-4 border-b pb-2'>
-                <MapPin className='w-5 h-5 mr-2 text-luxury-gold' /> Adresse de
-                Livraison
-              </h3>
-              {loadingAddress ? (
-                <p className='text-gray-500 flex items-center'>
-                  <Loader2 className='w-4 h-4 mr-2 animate-spin' /> Chargement
-                  de l'adresse...
-                </p>
-              ) : shippingAddress ? (
-                <div className='space-y-1 text-gray-600'>
-                  <p className='font-medium'>{shippingAddress.full_name}</p>
-                  <p>{shippingAddress.street}</p>
-                  <p>
-                    {shippingAddress.postal_code} {shippingAddress.city},{' '}
-                    {shippingAddress.country}
+            {order?.is_shipping ? (
+              <div>
+                <h3 className='flex items-center text-xl font-semibold text-gray-900 mb-4 border-b pb-2'>
+                  <MapPin className='w-5 h-5 mr-2 text-luxury-gold' /> Adresse
+                  de Livraison
+                </h3>
+                {loadingAddress ? (
+                  <p className='text-gray-500 flex items-center'>
+                    <Loader2 className='w-4 h-4 mr-2 animate-spin' /> Chargement
+                    de l'adresse...
                   </p>
-                  {shippingAddress.phone && <p>Tél: {shippingAddress.phone}</p>}
-                </div>
-              ) : (
-                <p className='text-red-500'>
-                  Adresse non trouvée ou erreur de chargement.
-                </p>
-              )}
-            </div>
+                ) : shippingAddress ? (
+                  <div className='space-y-1 text-gray-600'>
+                    <p className='font-medium'>{shippingAddress.full_name}</p>
+                    <p>{shippingAddress.street}</p>
+                    <p>
+                      {shippingAddress.postal_code} {shippingAddress.city},{' '}
+                      {shippingAddress.country}
+                    </p>
+                    {shippingAddress.phone && (
+                      <p>Tél: {shippingAddress.phone}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className='text-red-500'>
+                    Adresse non trouvée ou erreur de chargement.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className='space-y-1 text-gray-600'>
+                <p className='font-bold'>NB: Commande à récupérée en magasin</p>
+              </div>
+            )}
 
             {/* Section 3: Détails des articles */}
             <div>

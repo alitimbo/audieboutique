@@ -23,6 +23,7 @@ export const Cart: React.FC = () => {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [address, setAddress] = useState<string | null>(null)
+  const [isShipping, setIsShipping] = useState<boolean>(true)
 
   // Accédez directement aux données du store
   const cartItems = cartStore.items
@@ -49,6 +50,12 @@ export const Cart: React.FC = () => {
     cartStore.removeItem(id)
   }
 
+  const handleShipping = (ship: boolean) => {
+    setIsShipping(ship)
+  }
+
+  console.log(isShipping)
+
   // Logique de paiement
   const handleCheckout = async () => {
     if (!isAuthenticated) {
@@ -56,7 +63,7 @@ export const Cart: React.FC = () => {
       setTimeout(() => setCheckoutError(null), 4000)
       return
     }
-    if (!address) {
+    if (isShipping === true && !address) {
       setCheckoutError(
         'Veuillez ajouter ou sélectionner une adresse de livraison'
       )
@@ -85,7 +92,8 @@ export const Cart: React.FC = () => {
           itemCount,
           shipping,
           subtotal,
-          total
+          total,
+          isShipping
         )
         if (response.success) {
           //Logique ouverture du checkout
@@ -285,6 +293,7 @@ export const Cart: React.FC = () => {
                 onCheckout={handleCheckout}
                 onError={checkoutError}
                 isLoading={isCheckoutLoading}
+                onShipping={handleShipping}
               />
             </div>
           </div>

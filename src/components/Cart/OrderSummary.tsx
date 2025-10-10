@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Truck, Tag, Shield, CreditCard } from 'lucide-react'
 
 interface OrderSummaryProps {
+  onShipping: (ship: boolean) => void
   subtotal: number
   shipping: number
   discount?: number
@@ -14,6 +15,7 @@ interface OrderSummaryProps {
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
+  onShipping,
   subtotal,
   shipping,
   discount = 0,
@@ -23,8 +25,27 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   onError,
   isLoading = false
 }) => {
+  const [shippingMethod, setShippingMethod] = useState<'delivery' | 'pickup'>(
+    'delivery'
+  )
+  const [shippingCost, setShippingCost] = useState(shipping)
+
   const freeShippingThreshold = 80
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal)
+
+  // Met à jour shippingCost selon le mode de livraison
+  useEffect(() => {
+    if (shippingMethod === 'pickup') {
+      setShippingCost(0)
+    } else {
+      // Livraison gratuite si subtotal >= 80€
+      setShippingCost(subtotal >= freeShippingThreshold ? 0 : shipping)
+    }
+  }, [shippingMethod, subtotal, shipping])
+
+  const remainingForFreeShipping =
+    shippingMethod === 'delivery'
+      ? Math.max(0, freeShippingThreshold - subtotal)
+      : 0
 
   return (
     <motion.div
@@ -37,7 +58,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         Résumé de la commande
       </h2>
 
-      {/* Free Shipping Progress */}
+      {/* Progression livraison gratuite */}
       {remainingForFreeShipping > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -65,7 +86,42 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         </motion.div>
       )}
 
-      {/* Order Details */}
+      {/* Choix du mode de livraison */}
+      <div className='mb-4'>
+        <p className='text-sm font-medium text-luxury-gray-700 mb-2'>
+          Mode de livraison :
+        </p>
+        <div className='flex flex-col space-y-2'>
+          <label className='flex items-center space-x-2'>
+            <input
+              type='radio'
+              name='shippingMethod'
+              value='delivery'
+              checked={shippingMethod === 'delivery'}
+              onChange={() => {
+                setShippingMethod('delivery'), onShipping(true)
+              }}
+              className='accent-luxury-red'
+            />
+            <span>Se faire livrer</span>
+          </label>
+          <label className='flex items-center space-x-2'>
+            <input
+              type='radio'
+              name='shippingMethod'
+              value='pickup'
+              checked={shippingMethod === 'pickup'}
+              onChange={() => {
+                setShippingMethod('pickup'), onShipping(false)
+              }}
+              className='accent-luxury-red'
+            />
+            <span>Récupérer en magasin</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Détails de la commande */}
       <div className='space-y-4 mb-6'>
         <div className='flex justify-between items-center'>
           <span className='text-luxury-gray-600'>
@@ -83,10 +139,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           </div>
           <span
             className={`font-semibold ${
-              shipping === 0 ? 'text-green-600' : 'text-luxury-black'
+              shippingCost === 0 ? 'text-green-600' : 'text-luxury-black'
             }`}
           >
-            {shipping === 0 ? 'Gratuite' : `${shipping.toFixed(2)}€`}
+            {shippingCost === 0 ? 'Gratuite' : `${shippingCost.toFixed(2)}€`}
           </span>
         </div>
 
@@ -106,12 +162,13 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           <div className='flex justify-between items-center'>
             <span className='text-lg font-bold text-luxury-black'>Total</span>
             <span className='text-2xl font-bold text-luxury-red'>
-              {total.toFixed(2)}€
+              {(subtotal + shippingCost - discount).toFixed(2)}€
             </span>
           </div>
           <p className='text-sm text-luxury-gray-500 mt-1'>TVA incluse</p>
         </div>
       </div>
+
       {onError && (
         <p className='text-sm text-luxury-red mt-1 mb-2 text-center'>
           {onError}

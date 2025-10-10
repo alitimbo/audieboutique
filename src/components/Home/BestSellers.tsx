@@ -15,8 +15,8 @@ export const BestSellers: React.FC = () => {
     const product = products.find(p => p.id === productId)
     if (product) {
       addItem(product, 1, {
-        size: product.sizes ? product.sizes[0] : undefined,
-        color: product.colors ? product.colors[0]?.name : undefined
+        size: product.sizes ? product.sizes[0] : '',
+        color: product.colors ? product.colors[0]?.name : ''
       })
       toast.success(`${product.name} ajouté au panier`)
     }

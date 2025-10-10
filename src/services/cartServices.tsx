@@ -8,14 +8,22 @@ export class CartServices {
     itemCount: any,
     shipping: any,
     subtotal: any,
-    total: any
+    total: any,
+    isShipping: any
   ): Promise<any> {
     const { data, error } = await supabase
       .from('orders')
       .insert({
         user_id: userId,
         address_id: address,
-        order_details: { cartItems, itemCount, shipping, subtotal, total }
+        is_shipping: isShipping,
+        order_details: {
+          cartItems,
+          itemCount,
+          shipping,
+          subtotal,
+          total
+        }
       })
       .select()
 
