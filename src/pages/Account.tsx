@@ -203,6 +203,8 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { profile } = useAuthStore()
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 4
 
   //console.log(orders)
 
@@ -257,6 +259,11 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
     )
   }
 
+  // 🧮 Pagination
+  const totalPages = Math.ceil(orders.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedOrders = orders.slice(startIndex, startIndex + itemsPerPage)
+
   const getStatusColor = (status: Order['status']) => {
     switch (status) {
       case 'delivered':
@@ -289,8 +296,8 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <div className='space-y-4'>
-      {orders.length > 0
-        ? orders.map(order => (
+      {paginatedOrders.length > 0
+        ? paginatedOrders.map(order => (
             <div
               key={order.id}
               className='bg-luxury-white p-6 rounded-xl shadow-md border border-luxury-gray-100 transition-shadow hover:shadow-lg'
@@ -360,6 +367,37 @@ const OrderHistory: React.FC<{ userId: string }> = ({ userId }) => {
             </div>
           ))
         : null}
+
+      {/* --- Pagination controls --- */}
+      {totalPages > 1 && (
+        <div className='flex justify-center items-center space-x-3 mt-6'>
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+            className={`px-3 py-1 rounded-lg border ${
+              currentPage === 1
+                ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                : 'text-luxury-red border-luxury-red hover:bg-luxury-red hover:text-white transition'
+            }`}
+          >
+            Précédent
+          </button>
+          <span className='text-sm text-luxury-gray-600'>
+            Page {currentPage} sur {totalPages}
+          </span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+            className={`px-3 py-1 rounded-lg border ${
+              currentPage === totalPages
+                ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                : 'text-luxury-red border-luxury-red hover:bg-luxury-red hover:text-white transition'
+            }`}
+          >
+            Suivant
+          </button>
+        </div>
+      )}
     </div>
   )
 }
