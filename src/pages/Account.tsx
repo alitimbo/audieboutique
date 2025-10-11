@@ -444,13 +444,29 @@ export const Account: React.FC = () => {
   const handleCheckoutSuccess = async () => {
     if (successCheckout && successCheckout === 'true') {
       clearCart()
-      await sendEmail(
-        'Nouvelle commande',
-        adminEmail,
-        '<p>Bonjour vous avez une nouvelle commande</p>',
-        []
-      )
+
+      const adminHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color:#416A4A;">Nouvelle commande reçue</h2>
+          <p>Bonjour,</p>
+          <p>Une nouvelle commande vient d’être passée sur votre site.</p>
+          <p>Vous pouvez consulter les détails directement depuis votre espace administrateur.</p>
+          <p>
+            <a href="${window.location.origin}/admin/orders" 
+              style="display:inline-block; padding:10px 20px; background:#416A4A; color:white; text-decoration:none; border-radius:5px;">
+              Voir les commandes
+            </a>
+          </p>
+          <hr style="border:none; border-top:1px solid #ccc;">
+          <p>Audie Boutique 🌸</p>
+        </div>
+        `
+      await sendEmail('Nouvelle commande', adminEmail, adminHtml, [])
       toast.success('Votre commande a bien été effectué')
+      setTimeout(
+        () => (window.location.href = `${window.location.origin}/account`),
+        2000
+      )
     }
   }
 
