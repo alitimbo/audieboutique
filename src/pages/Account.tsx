@@ -9,6 +9,8 @@ import { useCartStore } from '../store/useCartStore'
 import { ProductService } from '../services/productService'
 import { orderService, Order } from '../lib/supabase' // Assurez-vous que orderService et Order sont exportés correctement
 import { generateInvoicePDF } from '../utils/generateInvoicePDF'
+import { sendEmail } from '../lib/sendEmail'
+import { adminEmail } from '../utils/adminEmail'
 
 // --- Composants Helpers pour la Structure et le Style ---
 
@@ -442,6 +444,12 @@ export const Account: React.FC = () => {
   const handleCheckoutSuccess = async () => {
     if (successCheckout && successCheckout === 'true') {
       clearCart()
+      await sendEmail(
+        'Nouvelle commande',
+        adminEmail,
+        '<p>Bonjour vous avez une nouvelle commande</p>',
+        []
+      )
       toast.success('Votre commande a bien été effectué')
     }
   }
