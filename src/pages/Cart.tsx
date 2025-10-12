@@ -46,7 +46,7 @@ export const Cart: React.FC = () => {
   const handleMoveToWishlist = (id: string) => {
     // Note: L'intégration de la wishlist n'est pas dans le store actuel,
     // mais vous pouvez implémenter cette logique ici.
-    console.log('Move to wishlist:', id)
+    //console.log('Move to wishlist:', id)
     cartStore.removeItem(id)
   }
 
@@ -54,7 +54,7 @@ export const Cart: React.FC = () => {
     setIsShipping(ship)
   }
 
-  console.log(isShipping)
+  //console.log(isShipping)
 
   // Logique de paiement
   const handleCheckout = async () => {
@@ -111,7 +111,7 @@ export const Cart: React.FC = () => {
 
   // Fonctions d'authentification (restent inchangées)
   const handleLogin = async (email: string, password: string) => {
-    console.log('Login:', { email, password })
+    //console.log('Login:', { email, password })
     try {
       await signIn(email, password)
       toast.success('Connexion réussie !')

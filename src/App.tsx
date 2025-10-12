@@ -29,6 +29,7 @@ import CGV from './pages/CGV'
 import MentionsLegales from './pages/MentionsLegales'
 import Confidentialite from './pages/Confidentialite'
 import CookiesPage from './pages/Cookies'
+import { NotFoundPage } from './pages/NotFoundPage'
 
 // Stores
 import { useAuthStore } from './store/useAuthStore'
@@ -189,6 +190,7 @@ function App () {
                         element={<Shop />}
                       />
                       <Route path='/account' element={<Account />} />
+                      <Route path='*' element={<NotFoundPage />} />
                     </Routes>
                   </motion.main>
                 </AnimatePresence>

@@ -41,6 +41,11 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
     password: '',
     name: ''
   })
+
+  const [isReset, setIsReset] = useState<boolean>(false)
+  const [resetFormEmail, setResetFormEmail] = useState({
+    resetEmail: ''
+  })
   const [addressFormData, setAddressFormData] = useState({
     addressName: '',
     address: '',
@@ -105,6 +110,12 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
           return currentAddresses.filter(address => address.id !== id)
         })
     } catch (error) {}
+  }
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    console.log(resetFormEmail.resetEmail)
   }
 
   const fetchAddress = async () => {
@@ -334,144 +345,222 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
       className='bg-luxury-white rounded-2xl p-6 shadow-luxury border border-luxury-gray-100 mb-6'
     >
       <AnimatePresence mode='wait'>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <h3 className='font-semibold text-luxury-black text-lg mb-4 text-center'>
-            Connexion ou Inscription
-          </h3>
-          {/* Auth Mode Toggle */}
-          <div className='flex bg-luxury-gray-100 rounded-xl p-1 mb-6'>
-            <button
-              onClick={() => setAuthMode('login')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
-                authMode === 'login'
-                  ? 'bg-luxury-white text-luxury-red shadow-sm'
-                  : 'text-luxury-gray-600'
-              }`}
-            >
-              Connexion
-            </button>
-
-            <button
-              onClick={() => setAuthMode('register')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
-                authMode === 'register'
-                  ? 'bg-luxury-white text-luxury-red shadow-sm'
-                  : 'text-luxury-gray-600'
-              }`}
-            >
-              Inscription
-            </button>
-          </div>
-          {/* Form */}
-          <form onSubmit={handleSubmit} className='space-y-4'>
-            {authMode === 'register' && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+        {!isReset ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h3 className='font-semibold text-luxury-black text-lg mb-4 text-center'>
+              Connexion ou Inscription
+            </h3>
+            {/* Auth Mode Toggle */}
+            <div className='flex bg-luxury-gray-100 rounded-xl p-1 mb-6'>
+              <button
+                onClick={() => setAuthMode('login')}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  authMode === 'login'
+                    ? 'bg-luxury-white text-luxury-red shadow-sm'
+                    : 'text-luxury-gray-600'
+                }`}
               >
+                Connexion
+              </button>
+
+              <button
+                onClick={() => setAuthMode('register')}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  authMode === 'register'
+                    ? 'bg-luxury-white text-luxury-red shadow-sm'
+                    : 'text-luxury-gray-600'
+                }`}
+              >
+                Inscription
+              </button>
+            </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className='space-y-4'>
+              {authMode === 'register' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
+                    Nom complet
+                  </label>
+
+                  <div className='relative'>
+                    <User className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
+
+                    <input
+                      type='text'
+                      value={formData.name}
+                      onChange={e =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className='w-full pl-10 pr-4 py-3 border border-luxury-gray-300 rounded-xl focus:ring-2 focus:ring-luxury-red focus:border-transparent'
+                      placeholder='Votre nom complet'
+                      required
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              <div>
                 <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
-                  Nom complet
+                  Email
                 </label>
 
                 <div className='relative'>
-                  <User className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
+                  <Mail className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
 
                   <input
-                    type='text'
-                    value={formData.name}
+                    type='email'
+                    value={formData.email}
                     onChange={e =>
-                      setFormData({ ...formData, name: e.target.value })
+                      setFormData({ ...formData, email: e.target.value })
                     }
                     className='w-full pl-10 pr-4 py-3 border border-luxury-gray-300 rounded-xl focus:ring-2 focus:ring-luxury-red focus:border-transparent'
-                    placeholder='Votre nom complet'
+                    placeholder='votre@email.com'
                     required
                   />
                 </div>
-              </motion.div>
-            )}
-
-            <div>
-              <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
-                Email
-              </label>
-
-              <div className='relative'>
-                <Mail className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
-
-                <input
-                  type='email'
-                  value={formData.email}
-                  onChange={e =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className='w-full pl-10 pr-4 py-3 border border-luxury-gray-300 rounded-xl focus:ring-2 focus:ring-luxury-red focus:border-transparent'
-                  placeholder='votre@email.com'
-                  required
-                />
               </div>
-            </div>
 
-            <div>
-              <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
-                Mot de passe
-              </label>
+              <div>
+                <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
+                  Mot de passe
+                </label>
 
-              <div className='relative'>
-                <Lock className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
+                <div className='relative'>
+                  <Lock className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
 
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={e =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className='w-full pl-10 pr-12 py-3 border border-luxury-gray-300 rounded-xl focus:ring-2 focus:ring-luxury-red focus:border-transparent'
-                  placeholder='••••••••'
-                  required
-                />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={e =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className='w-full pl-10 pr-12 py-3 border border-luxury-gray-300 rounded-xl focus:ring-2 focus:ring-luxury-red focus:border-transparent'
+                    placeholder='••••••••'
+                    required
+                  />
 
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword(!showPassword)}
+                    className='absolute right-3 top-1/2 transform -translate-y-1/2 text-luxury-gray-400 hover:text-luxury-gray-600'
+                  >
+                    {showPassword ? (
+                      <EyeOff className='w-5 h-5' />
+                    ) : (
+                      <Eye className='w-5 h-5' />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className='w-full flex justify-end mb-4 mt-4'>
                 <button
                   type='button'
-                  onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-luxury-gray-400 hover:text-luxury-gray-600'
+                  title='Réinitialiser le mot de passe'
+                  onClick={() => setIsReset(true)}
+                  className='text-sm font-medium text-luxury-gray-700 mb-2 underline pointer'
                 >
-                  {showPassword ? (
-                    <EyeOff className='w-5 h-5' />
-                  ) : (
-                    <Eye className='w-5 h-5' />
-                  )}
+                  J'ai oublié mon mot de passe
                 </button>
               </div>
-            </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type='submit'
-              disabled={isLoading}
-              className={`w-full py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center ${
-                isLoading
-                  ? 'bg-luxury-gray-300 text-luxury-gray-500 cursor-not-allowed'
-                  : 'bg-luxury-red text-luxury-white hover:bg-red-700'
-              }`}
-            >
-              {isLoading ? (
-                <Loader2 className='w-5 h-5 animate-spin mr-2' />
-              ) : authMode === 'login' ? (
-                'Se connecter et Continuer'
-              ) : (
-                'Créer un compte et Continuer'
-              )}
-            </motion.button>
-          </form>
-        </motion.div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type='submit'
+                disabled={isLoading}
+                className={`w-full py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center ${
+                  isLoading
+                    ? 'bg-luxury-gray-300 text-luxury-gray-500 cursor-not-allowed'
+                    : 'bg-luxury-red text-luxury-white hover:bg-red-700'
+                }`}
+              >
+                {isLoading ? (
+                  <Loader2 className='w-5 h-5 animate-spin mr-2' />
+                ) : authMode === 'login' ? (
+                  'Se connecter et Continuer'
+                ) : (
+                  'Créer un compte et Continuer'
+                )}
+              </motion.button>
+            </form>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <form onSubmit={handleReset} className='space-y-4'>
+              <h3 className='font-semibold text-luxury-black text-lg mb-4 text-center'>
+                Réinitialisation de mot de passe
+              </h3>
+              <div>
+                <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
+                  Email
+                </label>
+
+                <div className='relative'>
+                  <Mail className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-luxury-gray-400' />
+
+                  <input
+                    type='email'
+                    value={resetFormEmail.resetEmail}
+                    onChange={e =>
+                      setResetFormEmail({
+                        ...resetFormEmail,
+                        resetEmail: e.target.value
+                      })
+                    }
+                    className='w-full pl-10 pr-4 py-3 border border-luxury-gray-300 rounded-xl focus:ring-2 focus:ring-luxury-red focus:border-transparent'
+                    placeholder='votre@email.com'
+                    required
+                  />
+                </div>
+
+                <div className='w-full flex justify-end mb-4 mt-4'>
+                  <button
+                    type='button'
+                    title='Réinitialiser le mot de passe'
+                    onClick={() => setIsReset(false)}
+                    className='text-sm font-medium text-luxury-gray-700 mb-2 underline pointer'
+                  >
+                    Se connecter
+                  </button>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type='submit'
+                  disabled={isLoading}
+                  className={`mt-4 w-full py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center ${
+                    isLoading
+                      ? 'bg-luxury-gray-300 text-luxury-gray-500 cursor-not-allowed'
+                      : 'bg-luxury-red text-luxury-white hover:bg-red-700'
+                  }`}
+                >
+                  {isLoading ? (
+                    <Loader2 className='w-5 h-5 animate-spin mr-2' />
+                  ) : (
+                    'Réinitialiser '
+                  )}
+                </motion.button>
+              </div>
+            </form>
+          </motion.div>
+        )}
       </AnimatePresence>
     </motion.div>
   )
