@@ -8,7 +8,7 @@
  * @param url (Optionnel) L'URL vers laquelle le client sera redirigé au clic.
  */
 export const triggerPushNotification = async (
-  userId: string,
+  userIds: string[],
   title: string,
   body: string,
   url?: string
@@ -20,7 +20,7 @@ export const triggerPushNotification = async (
 
   // Le payload attendu par votre Edge Function
   const requestBody = {
-    userId: userId,
+    userIds,
     message: {
       title: title,
       body: body,

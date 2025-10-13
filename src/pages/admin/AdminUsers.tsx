@@ -22,9 +22,11 @@ import {
   Phone,
   MapPin
 } from 'lucide-react'
+import NotificationModal from '../../components/admin/NotificationModal'
 // Assurez-vous que useAuthStore et adminServices sont correctement définis
 import { useAuthStore } from '../../store/useAuthStore'
 import { adminServices } from '../../services/adminServices'
+import { triggerPushNotification } from '../../lib/sendNotification'
 
 // --- Interfaces et Types Réels ---
 
@@ -322,8 +324,13 @@ const calculateUserStats = (
     // Parse order_details pour obtenir le total
     let total = 0
     try {
-      const details = order.order_details
-      total = details.total || 0
+      let detailsObj = {}
+      try {
+        detailsObj = JSON.parse(order.order_details)
+      } catch (e) {
+        console.error('Erreur de parsing order_details:', e)
+      }
+      total = (detailsObj as any).total || 0
     } catch (e) {
       console.error('Erreur de parsing order_details:', e)
     }
@@ -364,6 +371,7 @@ export const AdminUsers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [notificationModalOpen, setNotificationModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set())
   const [isLoading, setIsLoading] = useState(false)
@@ -515,7 +523,7 @@ export const AdminUsers: React.FC = () => {
     { value: 'all', label: 'Tous les utilisateurs' },
     { value: 'client', label: 'Clients' },
     { value: 'agent', label: 'Agents' },
-    { value: 'admin', label: 'Administrateurs' },
+    //{ value: 'admin', label: 'Administrateurs' },
     { value: 'recent', label: 'Récents (30 jours)' },
     { value: 'active', label: 'Clients actifs' }
   ]
@@ -585,17 +593,26 @@ export const AdminUsers: React.FC = () => {
     setSelectedUserIds(newSelectedIds)
   }
 
-  const handleSendNotification = () => {
+  const handleSendNotification = async (
+    e: React.FormEvent,
+    data: { title: string; message: string }
+  ) => {
+    e.preventDefault()
     if (selectedUserIds.size === 0) return
 
-    const count = selectedUserIds.size
+    if (data.title.trim() === '' && data.message.trim() === '') {
+      alert('Veuillez indiquer un titre et un message')
+      return
+    }
 
-    alert(
-      `Notification simulée envoyée à ${count} utilisateur(s) sélectionnés: ${Array.from(
-        selectedUserIds
-      ).join(', ')}`
+    await triggerPushNotification(
+      Array.from(selectedUserIds),
+      `${data.title}`, // Titre
+      `${data.message}`, // Corps du message
+      `` // URL de redirection (par exemple)
     )
 
+    setNotificationModalOpen(false)
     setSelectedUserIds(new Set())
   }
 
@@ -670,7 +687,7 @@ export const AdminUsers: React.FC = () => {
           {/* Bouton d'action de masse conditionnel */}
           {selectedUserIds.size > 0 && (
             <motion.button
-              onClick={handleSendNotification}
+              onClick={() => setNotificationModalOpen(true)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className='flex items-center bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors'
@@ -962,6 +979,13 @@ export const AdminUsers: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onCreateUser={handleCreateUser}
+      />
+
+      {/* rendu du modal des notification*/}
+      <NotificationModal
+        isOpen={notificationModalOpen}
+        onClose={() => setNotificationModalOpen(false)}
+        onSubmit={handleSendNotification}
       />
     </div>
   )

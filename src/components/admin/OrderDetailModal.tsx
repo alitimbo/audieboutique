@@ -126,7 +126,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
       const statusConfig = getStatusConfig(currentStatus)
 
       await triggerPushNotification(
-        order.customerId,
+        [order.customerId],
         `Mise à jour de votre commande #${order.id.substring(0, 8)}`, // Titre
         `Votre commande est maintenant : ${statusConfig.text}`, // Corps du message
         `` // URL de redirection (par exemple)
