@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
  * À exécuter une seule fois lors du premier déploiement
  */
 export const initializeDefaultAdmin = async () => {
-  const adminEmail = 'admin@audieboutique.com'
+  const adminEmail = 'belemgroup2023@gmail.com'
   const adminPassword = 'Admin123456'
 
   try {

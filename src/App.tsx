@@ -30,6 +30,7 @@ import MentionsLegales from './pages/MentionsLegales'
 import Confidentialite from './pages/Confidentialite'
 import CookiesPage from './pages/Cookies'
 import { NotFoundPage } from './pages/NotFoundPage'
+import ResetPasswordPage from './pages/ResetPassword'
 
 // Stores
 import { useAuthStore } from './store/useAuthStore'
@@ -49,6 +50,7 @@ import AdminOrders from './pages/admin/AdminOrders'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminSettings from './pages/admin/AdminSettings'
 import AdminLayout from './components/admin/AdminLayout'
+import AdminNewPassword from './pages/admin/AdminNewPassword'
 import ProtectedAdminRoute from './components/admin/ProtectedAdminRoute'
 function App () {
   const { initialize, isLoading } = useAuthStore()
@@ -69,6 +71,7 @@ function App () {
         <Routes>
           {/* Admin Routes - Sans layout public */}
           <Route path='/admin/login' element={<AdminLogin />} />
+          <Route path='/new-password' element={<AdminNewPassword/>} />
           <Route
             path='/admin/reset-password'
             element={<AdminResetPassword />}
@@ -175,6 +178,7 @@ function App () {
                       <Route path='/support' element={<Support />} />
                       <Route path='/retour' element={<ReturnPolicy />} />
                       <Route path='/cgv' element={<CGV />} />
+                      <Route path='/reset-password' element={<ResetPasswordPage/>} />
                       <Route
                         path='/mentions-legales'
                         element={<MentionsLegales />}
