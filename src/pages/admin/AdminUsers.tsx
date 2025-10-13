@@ -323,17 +323,29 @@ const calculateUserStats = (
   orders.forEach(order => {
     // Parse order_details pour obtenir le total
     let total = 0
+    let detailsObj: any = {}
+
     try {
-      let detailsObj = {}
-      try {
+      // Si order.order_details est une chaîne JSON → on la parse
+      if (typeof order.order_details === 'string') {
         detailsObj = JSON.parse(order.order_details)
-      } catch (e) {
-        console.error('Erreur de parsing order_details:', e)
       }
-      total = (detailsObj as any).total || 0
+      // Si c’est déjà un objet → on l’utilise directement
+      else if (
+        typeof order.order_details === 'object' &&
+        order.order_details !== null
+      ) {
+        detailsObj = order.order_details
+      }
+      // Sinon → on garde un objet vide
+      else {
+        detailsObj = {}
+      }
     } catch (e) {
-      console.error('Erreur de parsing order_details:', e)
+      console.error('Erreur de parsing order_details:', e, order.order_details)
     }
+
+    total = detailsObj.total || 0
 
     const currentStats = statsMap.get(order.user_id) || {
       totalOrders: 0,
