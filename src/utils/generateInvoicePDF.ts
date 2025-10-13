@@ -80,7 +80,9 @@ const generateInvoicePDF = (order: OrderDetails) => {
     const itemTotal = item.quantity * item.product.price
     return [
       item.product.name,
-      `Couleur : ${item.selectedColor}, Taille : ${item.selectedSize}`,
+      `Couleur : ${item.selectedColor ? item.selectedColor : ''}, Taille : ${
+        item.selectedSize ? item.selectedSize : ''
+      }`,
       item.quantity.toString(),
       `${item.product.price.toFixed(2)} €`,
       `${itemTotal.toFixed(2)} €`

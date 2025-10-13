@@ -44,6 +44,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     specifications: {}
   })
 
+  console.log("specification", formData.specifications)
+
   const [isLoading, setIsLoading] = useState(false)
   const [newSpecKey, setNewSpecKey] = useState('')
   const [newSpecValue, setNewSpecValue] = useState('')

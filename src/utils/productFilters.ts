@@ -112,12 +112,19 @@ export const filterProductsByColor = (
   }
 
   return products.filter(product => {
-    // Les couleurs sont stockées sous forme de chaîne de caractères JSON, il faut la parser.
     try {
-      const colors = JSON.parse(product.colors as any) // Assurez-vous que le type est correctement géré
-      return colors.some(
-        (color: { name: string; value: string }) => color.name === selectedColor
-      )
+      // Vérifie si product.colors est déjà un tableau ou une string JSON
+      const colors =
+        typeof product.colors === 'string'
+          ? JSON.parse(product.colors)
+          : product.colors
+
+      return Array.isArray(colors)
+        ? colors.some(
+            (color: { name: string; value: string }) =>
+              color.name === selectedColor
+          )
+        : false
     } catch (e) {
       console.error('Erreur de parsing des couleurs du produit:', e)
       return false

@@ -47,6 +47,7 @@ export const ProductDetail: React.FC = () => {
     )
   }
 
+
   const relatedProducts = products
     .filter(p => p.id !== product.id && p.category === product.category)
     .slice(0, 4)

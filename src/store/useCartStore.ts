@@ -3,6 +3,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { Product } from '../types/product'
+import { toast } from 'sonner'
 
 export interface CartItem {
   id: string
@@ -49,6 +50,7 @@ export const useCartStore = create<CartState>()(
 
       addItem: (product: Product, quantity = 1, options = {}) => {
         const state = get()
+
         const existingItemIndex = state.items.findIndex(
           item =>
             item.product.id === product.id &&
@@ -57,6 +59,19 @@ export const useCartStore = create<CartState>()(
         )
 
         let updatedItems
+
+        // 🔍 Vérification du stock
+        const currentQuantity =
+          existingItemIndex >= 0 ? state.items[existingItemIndex].quantity : 0
+        const totalRequested = currentQuantity + quantity
+
+        if (totalRequested > product.stock) {
+          toast.error(
+            `⚠️ Stock insuffisant pour "${product.name}" — stock dispo: ${product.stock}, demandé: ${totalRequested}`
+          )
+          return // Stoppe l'ajout
+        }
+
         if (existingItemIndex >= 0) {
           updatedItems = [...state.items]
           updatedItems[existingItemIndex].quantity += quantity
@@ -73,7 +88,7 @@ export const useCartStore = create<CartState>()(
           updatedItems = [...state.items, newItem]
         }
 
-        // Mise à jour atomique: items ET total en une seule fois.
+        // ✅ Mise à jour atomique
         set({
           items: updatedItems,
           total: get().calculateTotal(updatedItems)
@@ -93,16 +108,29 @@ export const useCartStore = create<CartState>()(
 
       updateQuantity: (id: string, quantity: number) => {
         const state = get()
+
         if (quantity <= 0) {
           get().removeItem(id)
           return
         }
 
-        const updatedItems = state.items.map(item =>
-          item.id === id ? { ...item, quantity } : item
+        // Trouver le produit concerné
+        const item = state.items.find(i => i.id === id)
+        if (!item) return
+
+        // Vérifier le stock disponible
+        if (quantity > item.product.stock) {
+          toast.error(
+            `⚠️ Stock insuffisant pour "${item.product.name}" — stock dispo: ${item.product.stock}, demandé: ${quantity}`
+          )
+          return
+        }
+
+        const updatedItems = state.items.map(i =>
+          i.id === id ? { ...i, quantity } : i
         )
 
-        // Mise à jour atomique
+        // ✅ Mise à jour atomique
         set({
           items: updatedItems,
           total: get().calculateTotal(updatedItems)
@@ -141,8 +169,7 @@ export const useCartStore = create<CartState>()(
       // Fonction de calcul qui ne modifie pas l'état
       calculateTotal: (items = get().items) => {
         return items.reduce(
-          (sum, item) =>
-            sum + parseFloat(item.product.price as string) * item.quantity,
+          (sum, item) => sum + Number(item.product.price) * item.quantity,
           0
         )
       }

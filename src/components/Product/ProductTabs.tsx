@@ -11,6 +11,8 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({
   description,
   specifications
 }) => {
+
+  console.log(specifications)
   const [activeTab, setActiveTab] = useState('description')
 
   const tabs = [
