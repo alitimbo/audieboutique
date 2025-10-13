@@ -71,7 +71,7 @@ function App () {
         <Routes>
           {/* Admin Routes - Sans layout public */}
           <Route path='/admin/login' element={<AdminLogin />} />
-          <Route path='/new-password' element={<AdminNewPassword/>} />
+          <Route path='/admin/new-password' element={<AdminNewPassword/>} />
           <Route
             path='/admin/reset-password'
             element={<AdminResetPassword />}

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 
-export default function ResetPasswordPage () {
+export default function AdminNewPassword () {
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const navigate = useNavigate()
@@ -30,7 +32,7 @@ export default function ResetPasswordPage () {
 
     setLoading(false)
     if (error) {
-      setMessage("Une erreur s'est produite. Veuillez réessayer.")
+      setMessage("❌ Une erreur s'est produite. Veuillez réessayer.")
       console.error(error)
     } else {
       setMessage('✅ Mot de passe mis à jour avec succès. Redirection...')
@@ -51,14 +53,23 @@ export default function ResetPasswordPage () {
         </p>
 
         <form onSubmit={handleReset} className='space-y-4'>
-          <input
-            type='password'
-            placeholder='Nouveau mot de passe'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            className='w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-black'
-          />
+          <div className='relative'>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder='Nouveau mot de passe'
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              className='w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-black'
+            />
+            <button
+              type='button'
+              onClick={() => setShowPassword(!showPassword)}
+              className='absolute right-3 top-3 text-gray-500 hover:text-black focus:outline-none'
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
           <button
             type='submit'
