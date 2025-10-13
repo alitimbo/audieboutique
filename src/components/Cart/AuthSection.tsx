@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { AddressServices } from '../../services/AddressServices'
 import { toast } from 'sonner'
+import { authService } from '../../lib/supabase'
 
 interface AuthSectionProps {
   isLoggedIn: boolean
@@ -115,7 +116,11 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    console.log(resetFormEmail.resetEmail)
+    await authService.resetPasswordUser(resetFormEmail.resetEmail)
+
+    toast.success(
+      'Un email vous a été envoyé pour réinitialiser votre mot de passe'
+    )
   }
 
   const fetchAddress = async () => {

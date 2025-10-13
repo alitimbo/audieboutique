@@ -1,5 +1,8 @@
-import { supabase } from '../lib/supabase'
+import { supabase,  } from '../lib/supabase'
 import { UserData } from '../types/user'
+import { sendEmail } from '../lib/sendEmail'
+import { authService } from '../lib/supabase'
+
 
 export class UserServices {
   //Fonction pour recuperer l'ensemble des utilisateur du systeme (admin, client, commercial, etc)
@@ -77,4 +80,6 @@ export class UserServices {
       return []
     }
   }
+
+  
 }
