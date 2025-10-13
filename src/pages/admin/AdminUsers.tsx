@@ -20,8 +20,11 @@ import {
   Bell,
   Calendar,
   Phone,
-  MapPin
+  MapPin,
+  Lock,
+  Unlock
 } from 'lucide-react'
+import { toast } from 'sonner'
 import NotificationModal from '../../components/admin/NotificationModal'
 // Assurez-vous que useAuthStore et adminServices sont correctement définis
 import { useAuthStore } from '../../store/useAuthStore'
@@ -88,8 +91,6 @@ interface CreateUserModalProps {
     role: 'client' | 'agent' | 'admin'
   ) => void
 }
-
-import { Lock, Unlock } from 'lucide-react' // 👈 N'oubliez pas l'import
 
 // ...
 interface ToggleSwitchProps {
@@ -639,6 +640,7 @@ export const AdminUsers: React.FC = () => {
       let response = null
       if (role === 'agent') {
         response = await signUpAgent(email, password, { full_name: fullName })
+        toast.success('Agent crée qvec succès')
       } else if (role === 'client') {
         // Supposons que vous avez une fonction signUp pour les clients dans useAuthStore
         // Si vous ne créez que des agents et admins, vous pouvez supprimer ceci

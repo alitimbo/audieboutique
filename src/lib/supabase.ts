@@ -203,33 +203,39 @@ export const authService = {
     password: string,
     userData: { full_name: string }
   ) {
-    // 1. Création de l'utilisateur dans Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: userData
-      }
-    })
-
-    if (error) throw error
-
-    // 2. Insertion dans la table 'users' avec le rôle 'agent'
-    if (data.user) {
-      const { error: userError } = await supabase.from('users').insert({
-        id: data.user.id,
-        email: data.user.email,
-        full_name: userData.full_name,
-        provider: 'email',
-        role: 'agent' // 👈 RÔLE SPÉCIFIQUE
+    try {
+      // 1️⃣ Création de l'utilisateur dans Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: userData
+        }
       })
 
-      if (userError) throw userError
+      if (error) throw error
+
+      // 2️⃣ Insertion dans la table 'users' avec le rôle 'agent'
+      if (data.user) {
+        const { error: userError } = await supabase.from('users').insert({
+          id: data.user.id,
+          email: data.user.email,
+          full_name: userData.full_name,
+          provider: 'email',
+          role: 'agent' // 👈 rôle spécifique
+        })
+
+        if (userError) throw userError
+      }
+
+      // 3️⃣ Retourne les données de l'utilisateur créé
+      return data
+    } catch (err) {
+      // Gestion d'erreur centralisée
+      console.error("Erreur lors de l'inscription de l'agent:", err)
+      throw err
     }
-
-    return data
   },
-
   async signIn (email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

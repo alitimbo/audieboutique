@@ -105,31 +105,11 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true })
           // Utilisation du nouveau service pour l'inscription d'un agent
-          const { user } = await authService.signUpAgent(
-            email,
-            password,
-            userData
-          )
-
-          if (user) {
-            // Récupérer le profile (qui devrait avoir le rôle 'agent')
-            const profile = await authService.getUserProfile(user.id)
-
-            /*
-            set({
-              user,
-              profile,
-              isAuthenticated: true,
-              isAdmin: profile?.role === 'admin',
-              isAgent: profile?.role === 'agent', // Doit être TRUE ici
-              isLoading: false
-            })
-              */
-          }
+          await authService.signUpAgent(email, password, userData)
         } catch (error) {
           set({ isLoading: false })
           console.error('Agent Signup error:', error)
-          throw error
+          //throw error
         }
       },
 
