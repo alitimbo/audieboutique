@@ -262,6 +262,7 @@ export const Cart: React.FC = () => {
                       <CartItem
                         item={{
                           id: item.id,
+                          productId: item.productId,
                           name: item.product.name,
                           price: parseFloat(item.product.price as string), // Assurez-vous que le prix est un nombre
                           original_price: item.product.original_price

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 
 export interface CartItemData {
   id: string
+  productId: string
   name: string
   price: number
   original_price?: number
@@ -28,6 +29,7 @@ export const CartItem: React.FC<CartItemProps> = ({
   onRemove,
   onMoveToWishlist
 }) => {
+  //console.log(item)
   const subtotal = item.price * item.quantity
   const originalSubtotal = item.original_price
     ? item.original_price * item.quantity
@@ -45,7 +47,7 @@ export const CartItem: React.FC<CartItemProps> = ({
       <div className='flex flex-col sm:flex-row gap-4'>
         {/* Product Image */}
         <div className='flex-shrink-0'>
-          <Link to={`/product/${item.id}`}>
+          <Link to={`/product/${item.productId}`}>
             <motion.img
               whileHover={{ scale: 1.05 }}
               src={item.image}
@@ -58,7 +60,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         {/* Product Info */}
         <div className='flex-1 min-w-0'>
           <div className='flex justify-between items-start mb-2'>
-            <Link to={`/product/${item.id}`}>
+            <Link to={`/product/${item.productId}`}>
               <h3 className='text-lg font-semibold text-luxury-black hover:text-luxury-red transition-colors duration-200 line-clamp-2'>
                 {item.name}
               </h3>

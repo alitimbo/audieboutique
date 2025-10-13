@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 export interface CartItem {
   id: string
+  productId: string
   product: Product
   quantity: number
   selectedSize?: string
@@ -80,6 +81,7 @@ export const useCartStore = create<CartState>()(
             id: `${product.id}-${options.size || 'default'}-${
               options.color || 'default'
             }`,
+            productId: product.id,
             product,
             quantity,
             selectedSize: options.size,
