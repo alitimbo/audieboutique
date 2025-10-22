@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -71,7 +72,7 @@ function App () {
         <Routes>
           {/* Admin Routes - Sans layout public */}
           <Route path='/admin/login' element={<AdminLogin />} />
-          <Route path='/admin/new-password' element={<AdminNewPassword/>} />
+          <Route path='/admin/new-password' element={<AdminNewPassword />} />
           <Route
             path='/admin/reset-password'
             element={<AdminResetPassword />}
@@ -178,7 +179,10 @@ function App () {
                       <Route path='/support' element={<Support />} />
                       <Route path='/retour' element={<ReturnPolicy />} />
                       <Route path='/cgv' element={<CGV />} />
-                      <Route path='/reset-password' element={<ResetPasswordPage/>} />
+                      <Route
+                        path='/reset-password'
+                        element={<ResetPasswordPage />}
+                      />
                       <Route
                         path='/mentions-legales'
                         element={<MentionsLegales />}
@@ -219,6 +223,7 @@ function App () {
             }
           }}
         />
+        <Analytics />
       </Router>
     </HelmetProvider>
   )
