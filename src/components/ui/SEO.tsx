@@ -12,8 +12,8 @@ interface SEOProps {
 
 export const SEO: React.FC<SEOProps> = ({
   title,
-  description = 'Audie Boutique - La référence de la lingerie, mode et accessoires en Martinique. Entre audace, wax et élégance. Livraison gratuite dès 80€.',
-  keywords = 'luxe, premium, boutique, e-commerce, mode, design, bijoux, accessoires, vêtements, martinique',
+  description = 'Audie Boutique - La référence de la lingerie, mode et accessoires. Entre audace, wax et élégance. Livraison gratuite dès 80€.',
+  keywords = 'luxe, premium, boutique, e-commerce, mode, design, bijoux, accessoires, vêtements, haute couture, tendance, fashion, style, élégance, qualité, exclusif, unique, shopping en ligne',
   image = '/og-image.jpg',
   url = window.location.href,
   type = 'website'

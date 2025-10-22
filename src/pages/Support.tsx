@@ -70,7 +70,7 @@ export const Support: React.FC = () => {
   return (
     <>
       <SEO
-        title='Aide & Support - Audie Boutique'
+        title='Aide & Support'
         description="Besoin d'aide ? Notre équipe est là pour vous accompagner avec bienveillance. FAQ, contact rapide, engagements service client."
       />
       <div className='min-h-screen bg-luxury-gray-50 pb-16'>

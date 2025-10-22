@@ -7,7 +7,7 @@ export const ReturnPolicy: React.FC = () => {
   return (
     <>
       <SEO
-        title="Politique de retour - Audie Boutique"
+        title="Politique de retour"
         description="Découvrez notre politique de retour conforme aux normes européennes. Droit de rétractation, conditions, procédure, remboursement, exceptions."
       />
       <div className="min-h-screen bg-luxury-gray-50 pb-16">

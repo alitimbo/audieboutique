@@ -18,8 +18,8 @@ export const Home: React.FC = () => {
     <>
       <SEO
         title='Accueil'
-        description='Audie Boutique - La référence de la lingerie, mode et accessoires en Martinique. Entre audace, wax et élégance. Livraison gratuite dès 80€.'
-        keywords='audie boutique, martinique, lingerie, mode féminine, wax, corsets, bijoux créoles, boutique en ligne, élégance caribéenne'
+        description='Audie Boutique - La référence de la lingerie, mode et accessoires. Entre audace, wax et élégance. Livraison gratuite dès 80€.'
+        keywords='audie boutique, lingerie, mode féminine, wax, corsets, bijoux créoles, boutique en ligne, élégance caribéenne, style unique, accessoires de mode, vêtements tendance, shopping en ligne'
       />
 
       <div className='min-h-screen bg-luxury-black'>

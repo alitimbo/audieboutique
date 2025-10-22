@@ -158,7 +158,7 @@ export const Shop: React.FC = () => {
       <SEO
         title='Audie Boutique - Boutique en ligne de lingerie, mode et accessoires premium'
         description='Découvrez notre collection complète de lingerie, mode et accessoires premium.'
-        keywords='boutique, lingerie, mode féminine, wax, corsets, bijoux, maillots de bain, sacs, accessoires, martinique, premium, luxe'
+        keywords='boutique, lingerie, mode féminine, wax, corsets, bijoux, maillots de bain, sacs, accessoires, martinique, premium, luxe, shopping en ligne, vêtements tendance, élégance caribéenne'
       />
 
       <div className='min-h-screen bg-luxury-gray-50'>

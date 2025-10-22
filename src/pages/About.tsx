@@ -6,7 +6,7 @@ export const About: React.FC = () => {
     <>
       <SEO
         title="À propos"
-        description="Découvrez l'histoire de LuxStore, notre mission et nos valeurs. Une boutique premium dédiée à l'excellence."
+        description="Découvrez l'histoire de Audie Boutique, notre mission et nos valeurs. Une boutique premium dédiée à l'excellence."
         keywords="à propos, luxstore, histoire, mission, valeurs, équipe"
       />
       
