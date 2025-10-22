@@ -306,18 +306,21 @@ export const Contact: React.FC = () => {
                     {
                       icon: Instagram,
                       name: 'Instagram',
-                      color: 'hover:text-pink-500'
+                      color: 'hover:text-pink-500',
+                      link: 'https://www.instagram.com/audie_boutique/'
                     },
                     {
                       icon: Facebook,
                       name: 'Facebook',
-                      color: 'hover:text-blue-600'
+                      color: 'hover:text-blue-600',
+                      link: 'https://web.facebook.com/profile.php?id=100063608972271'
                     }
                     /*{ icon: Twitter, name: 'Twitter', color: 'hover:text-blue-400' }*/
                   ].map(social => (
                     <motion.a
                       key={social.name}
-                      href='#'
+                      href={social.link}
+                      target='_blank'
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className={`p-3 bg-luxury-gray-100 rounded-full text-luxury-gray-600 ${social.color} transition-colors duration-200`}

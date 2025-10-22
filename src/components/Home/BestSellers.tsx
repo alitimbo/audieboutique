@@ -67,7 +67,7 @@ export const BestSellers: React.FC = () => {
               Nos Meilleures Ventes
             </h2>
             <p className='text-lg text-luxury-gray-300 max-w-2xl mx-auto'>
-              Les coups de cœur de nos clientes martiniquaises
+              Les coups de cœur de nos clientes 
             </p>
           </motion.div>
           <div className='flex justify-center items-center h-48'>
@@ -97,7 +97,7 @@ export const BestSellers: React.FC = () => {
               Nos Meilleures Ventes
             </h2>
             <p className='text-lg text-luxury-gray-300 max-w-2xl mx-auto'>
-              Les coups de cœur de nos clientes martiniquaises
+              Les coups de cœur de nos clientes
             </p>
           </motion.div>
           <div className='flex justify-center items-center h-48'>
@@ -123,7 +123,7 @@ export const BestSellers: React.FC = () => {
             Nos Meilleures Ventes
           </h2>
           <p className='text-lg text-luxury-gray-300 max-w-2xl mx-auto'>
-            Les coups de cœur de nos clientes martiniquaises
+            Les coups de cœur de nos clientes
           </p>
         </motion.div>
 

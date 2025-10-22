@@ -19,10 +19,10 @@ interface Slide {
 const slides: Slide[] = [
   {
     id: 1,
-    title: "L'élégance s'invite à la Martinique",
-    subtitle: 'Audie Boutique - Luxe & Sensualité Tropicale',
+    title: "🖤 Chic et moderne",
+    subtitle: 'Entrez dans un monde où chaque détail compte',
     description:
-      'Découvrez nos collections raffinées, inspirées par la beauté des Caraïbes.',
+      'Mode, élégance et accessoires pour toutes vos envies.',
     cta: 'Explorer nos collections',
     ctaLink: '/shop',
     //backgroundImage: BannerOne
@@ -70,7 +70,7 @@ const slides: Slide[] = [
     title: 'Bijoux d’Exception',
     subtitle: 'Élégance et Raffinement',
     description:
-      'Découvrez notre collection exclusive de bijoux en Martinique, alliant luxe, finesse et éclat. Chaque pièce est conçue pour sublimer votre style et illuminer vos moments précieux.',
+      'Découvrez nos collections et laissez-vous inspirer par la mode qui vous ressemble 💕.',
     cta: 'Explorer la gamme',
     ctaLink: '/shop/category/bijoux',
     backgroundClass:

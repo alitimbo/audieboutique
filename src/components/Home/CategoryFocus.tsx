@@ -43,10 +43,10 @@ const focusCategories: FocusCategory[] = [
    */
   {
     id: 'bijoux',
-    name: 'Bijoux Créoles',
-    title: "L'Éclat des Antilles",
+    name: 'Bijoux',
+    title: "L'Éclat de nos accessoires",
     description:
-      'Sublimez votre beauté naturelle avec nos bijoux inspirés de la culture créole. Or, argent et pierres précieuses pour un style authentiquement caribéen.',
+      'Sublimez votre beauté naturelle avec nos bijoux. Or, argent et pierres précieuses pour un style authentique.',
     image: '/bijoux.png',
     link: '/shop/category/bijoux',
     features: [
@@ -61,7 +61,7 @@ const focusCategories: FocusCategory[] = [
     name: 'Sacs & Portes monnaies',
     title: 'Élégance Tropicale',
     description:
-      'Découvrez nos sacs et portefeuilles inspirés de la culture créole en Martinique. Alliant style, fonctionnalité et matériaux nobles, ils subliment votre quotidien avec raffinement.',
+      'Découvrez nos sacs et portefeuilles alliants style, fonctionnalité et matériaux nobles, ils subliment votre quotidien avec raffinement.',
     image: '/sacs-portefeuilles.png',
     link: '/shop/category/sacs-portes-monnaies',
     features: [

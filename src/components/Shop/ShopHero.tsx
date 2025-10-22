@@ -69,10 +69,10 @@ export const ShopHero: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-luxury-white mb-6 leading-tight"
+              className="text-4xl md:text-3xl lg:text-4xl font-display font-bold text-luxury-white mb-6 leading-tight"
             >
-              Découvrez l'Élégance
-              <span className="block text-luxury-red">Caribéenne</span>
+              Découvrez nos collections de vêtements et d’accessoires pensés pour
+              <span className="block text-luxury-red">toutes les femmes élégantes et modernes.</span>
             </motion.h1>
 
             <motion.p

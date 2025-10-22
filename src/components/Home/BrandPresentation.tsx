@@ -47,7 +47,7 @@ export const BrandPresentation: React.FC = () => {
           >
             La référence de la <span className="text-luxury-red font-semibold">lingerie</span>, 
             <span className="text-luxury-red font-semibold"> mode</span> et 
-            <span className="text-luxury-red font-semibold"> accessoires</span> en Martinique.
+            <span className="text-luxury-red font-semibold"> accessoires</span>.
           </motion.p>
 
           <motion.p
@@ -59,7 +59,7 @@ export const BrandPresentation: React.FC = () => {
             Entre <span className="text-luxury-red">audace</span>, 
             <span className="text-luxury-red"> wax</span> et 
             <span className="text-luxury-red"> élégance</span>, 
-            nous célébrons la beauté caribéenne sous toutes ses formes.
+            nous célébrons la beauté sous toutes ses formes.
           </motion.p>
 
           {/* Features */}
@@ -76,8 +76,8 @@ export const BrandPresentation: React.FC = () => {
               <div className="bg-luxury-black p-4 rounded-2xl mb-4 border border-luxury-gray-800">
                 <MapPin className="w-8 h-8 text-luxury-red" />
               </div>
-              <h3 className="text-luxury-white font-semibold mb-2">Martinique</h3>
-              <p className="text-luxury-gray-400 text-sm">Ancrée dans nos racines caribéennes</p>
+              <h3 className="text-luxury-white font-semibold mb-2">Mode</h3>
+              <p className="text-luxury-gray-400 text-sm">Ancrée dans nos racines</p>
             </motion.div>
 
             <motion.div
