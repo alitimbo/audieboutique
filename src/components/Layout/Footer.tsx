@@ -62,13 +62,13 @@ export const Footer: React.FC = () => {
     {
       name: 'Instagram',
       icon: <Instagram className='w-5 h-5' />,
-      url: '#',
+      url: 'https://www.instagram.com/audie_boutique/',
       color: 'hover:text-pink-400'
     },
     {
       name: 'Facebook',
       icon: <Facebook className='w-5 h-5' />,
-      url: '#',
+      url: 'https://web.facebook.com/profile.php?id=100063608972271',
       color: 'hover:text-blue-400'
     }
     /*
@@ -232,6 +232,7 @@ export const Footer: React.FC = () => {
                 <motion.a
                   key={social.name}
                   href={social.url}
+                  target='_blank'
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
                   className={`text-luxury-gray-400 ${social.color} transition-colors duration-200`}
