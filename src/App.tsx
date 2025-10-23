@@ -55,21 +55,25 @@ import AdminLayout from './components/admin/AdminLayout'
 import AdminNewPassword from './pages/admin/AdminNewPassword'
 import ProtectedAdminRoute from './components/admin/ProtectedAdminRoute'
 function App () {
+  /*
   const { initialize, isLoading } = useAuthStore()
 
+  
   useEffect(() => {
     initialize()
   }, [initialize])
+  
 
   if (isLoading) {
     return <LoadingPage />
   }
+    */
 
   return (
     <HelmetProvider>
       <Router>
         <ScrollToTop />
-        {/*<AuthInitializer />*/}
+        <AuthInitializer />
 
         <Routes>
           {/* Admin Routes - Sans layout public */}

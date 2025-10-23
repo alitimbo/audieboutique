@@ -1,34 +1,37 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/useAuthStore';
+import { useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuthStore } from '../../store/useAuthStore'
+import { LoadingSpinner } from './LoadingSpinner'
 
 export const AuthInitializer = () => {
-  const { initialize, isLoading, isAdmin, isAgent } = useAuthStore();
-  const navigate = useNavigate();
+  const { initialize, isLoading, isAdmin, isAgent } = useAuthStore()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const initAuth = async () => {
-      await initialize(); // Appelle la fonction initialize pour charger l'utilisateur et le profil
+      await initialize() // Appelle la fonction initialize pour charger l'utilisateur et le profil
 
-      // Redirection après l'initialisation
+      // Redirection après l'initialisation, seulement si nécessaire
       if (!isLoading) {
-        if (isAdmin) {
-          navigate('/admin/dashboard'); // Redirige vers le tableau de bord pour les admins
-        } else if (isAgent) {
-          navigate('/admin/catalogue'); // Redirige vers le catalogue pour les agents
+        const pathname = location.pathname
+        if (isAdmin && !pathname.startsWith('/admin/')) {
+          navigate('/admin/dashboard') // Redirige vers le tableau de bord pour les admins seulement si pas déjà dans /admin/
+        } else if (isAgent && !pathname.startsWith('/admin/')) {
+          navigate('/admin/catalogue') // Redirige vers le catalogue pour les agents seulement si pas déjà dans /admin/
         } else {
-          //navigate('/login'); // Redirige vers la page de connexion si aucun rôle spécifique
+          // Pas de redirection pour les autres cas (par exemple, si déjà dans /admin/ ou pas de rôle spécifique)
         }
       }
-    };
+    }
 
-    initAuth();
-  }, [initialize, isLoading, isAdmin, isAgent, navigate]);
+    initAuth()
+  }, []) // Dépendances vides pour exécuter une seule fois au montage
 
   // Afficher un indicateur de chargement pendant l'initialisation
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return <LoadingSpinner />
   }
 
-  return null; // Ne rend rien une fois l'initialisation terminée
-};
+  return null // Ne rend rien une fois l'initialisation terminée
+}
