@@ -32,7 +32,7 @@ export const Cart: React.FC = () => {
 
   // Le prix de la livraison est maintenant calculé sur le sous-total du store
   const shipping = subtotal >= 80 ? 0 : 5.99
-  const total = subtotal + shipping
+  const total = shipping ? subtotal + shipping : subtotal
 
   // Fonctions pour interagir avec le store
   const handleUpdateQuantity = (id: string, quantity: number) => {
