@@ -41,10 +41,10 @@ export const DeliveryBanner: React.FC = () => {
             </motion.div>
             <div>
               <h3 className="text-luxury-white font-bold text-lg md:text-xl">
-                Livraison gratuite dès 80€ d'achat
+                Livraison entre 2 à 10 jours
               </h3>
               <p className="text-luxury-white/90 text-sm">
-                Partout en Martinique
+                Partout dans le monde
               </p>
             </div>
           </motion.div>

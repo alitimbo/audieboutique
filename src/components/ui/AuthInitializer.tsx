@@ -30,7 +30,7 @@ export const AuthInitializer = () => {
 
   // Afficher un indicateur de chargement pendant l'initialisation
   if (isLoading) {
-    return <LoadingSpinner />
+    return null
   }
 
   return null // Ne rend rien une fois l'initialisation terminée
