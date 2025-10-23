@@ -209,6 +209,8 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     opt => opt.value !== 'all'
   )
 
+  console.log(order)
+
   return (
     <AnimatePresence>
       {/* Conteneur et Overlay */}

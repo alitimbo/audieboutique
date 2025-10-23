@@ -35,6 +35,7 @@ import ResetPasswordPage from './pages/ResetPassword'
 
 // Stores
 import { useAuthStore } from './store/useAuthStore'
+import { AuthInitializer } from './components/ui/AuthInitializer'
 
 // Loading Component
 import { LoadingPage } from './components/ui/LoadingSpinner'
@@ -68,6 +69,7 @@ function App () {
     <HelmetProvider>
       <Router>
         <ScrollToTop />
+        {/*<AuthInitializer />*/}
 
         <Routes>
           {/* Admin Routes - Sans layout public */}

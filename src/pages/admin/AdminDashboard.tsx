@@ -8,7 +8,12 @@ import {
   ShoppingCart,
   DollarSign,
   Eye,
-  Calendar
+  Calendar,
+  Clock,
+  CreditCard,
+  Truck,
+  CheckCircle,
+  XCircle
 } from 'lucide-react'
 import {
   AreaChart,
@@ -163,12 +168,18 @@ export const AdminDashboard: React.FC = () => {
   // 4. Calcul des statistiques via useMemo
   const stats = useMemo(() => {
     let totalRevenue = 0
-    let totalOrders = filteredOrders.length
+    let totalOrders = filteredOrders.filter(
+      elt => elt.status !== 'cancelled' && elt.status !== 'pending'
+    ).length
     let totalClients = clientUsers.length
 
     filteredOrders.forEach(order => {
       // Comptez le revenu uniquement pour les commandes payées/traitées/expédiées/livrées
-      if (order.status !== 'cancelled' && order.order_details.total) {
+      if (
+        order.status !== 'cancelled' &&
+        order.status !== 'pending' &&
+        order.order_details.total
+      ) {
         totalRevenue += order.order_details.total
       }
     })
@@ -212,7 +223,11 @@ export const AdminDashboard: React.FC = () => {
       const revenue = order.order_details.total || 0
 
       // N'ajoutez que les commandes qui ont généré un revenu (non annulées)
-      if (order.status !== 'cancelled' && dailyRevenue.has(dateKey)) {
+      if (
+        order.status !== 'cancelled' &&
+        order.status !== 'pending' &&
+        dailyRevenue.has(dateKey)
+      ) {
         const currentTotal = dailyRevenue.get(dateKey) || 0
         dailyRevenue.set(dateKey, currentTotal + revenue)
       }
@@ -235,6 +250,47 @@ export const AdminDashboard: React.FC = () => {
     return data
   }, [filteredOrders, startDate, endDate])
 
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return {
+          text: 'Abandonné',
+          color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+          icon: Clock
+        }
+      case 'processing':
+        return {
+          text: 'Payé',
+          color: 'bg-blue-100 text-blue-800 border-blue-200',
+          icon: CreditCard // Changement pour mieux correspondre à 'Payé'
+        }
+      case 'shipped':
+        return {
+          text: 'Expédié',
+          color: 'bg-purple-100 text-purple-800 border-purple-200',
+          icon: Truck
+        }
+      case 'delivered':
+        return {
+          text: 'Livré',
+          color: 'bg-green-100 text-green-800 border-green-200',
+          icon: CheckCircle
+        }
+      case 'cancelled':
+        return {
+          text: 'Annulé',
+          color: 'bg-red-100 text-red-800 border-red-200',
+          icon: XCircle
+        }
+      default:
+        return {
+          text: 'Inconnu',
+          color: 'bg-gray-100 text-gray-800 border-gray-200',
+          icon: Clock
+        }
+    }
+  }
+
   // 6. Commandes récentes (les 4 dernières)
   const recentOrders = useMemo(() => {
     const usersMap = new Map<string, ClientUser>()
@@ -252,12 +308,7 @@ export const AdminDashboard: React.FC = () => {
           id: `#${order.id.substring(0, 8)}`,
           customer: user ? user.full_name : 'Utilisateur inconnu',
           amount: `€${order.order_details.total.toFixed(2)}`,
-          status:
-            order.status === 'processing'
-              ? 'Payé'
-              : order.status === 'delivered'
-              ? 'Livré'
-              : 'En cours',
+          status: getStatusConfig(order.status).text,
           date: new Date(order.created_at).toLocaleDateString('fr-FR')
         }
       })

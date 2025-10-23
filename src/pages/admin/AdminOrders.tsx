@@ -31,6 +31,8 @@ interface RawOrder {
   created_at: string
   user_id: string
   address_id: string
+  is_shipping: boolean
+  paid_at: string | null
   status:
     | 'pending'
     | 'paid'
@@ -131,6 +133,8 @@ export const AdminOrders: React.FC = () => {
         status: order.status,
         itemsCount: order.order_details.itemCount,
         createdAt: order.created_at,
+        is_shipping: order.is_shipping,
+        paid_at: order.paid_at,
         addressId: order.address_id, // L'ID pour la recherche d'adresse
         orderDetails: order.order_details // Les détails complets
       } as any as OrderDisplay // Utiliser 'any' ici pour simplifier le mapping vers OrderDisplay enrichi
@@ -245,7 +249,7 @@ export const AdminOrders: React.FC = () => {
 
   const statusOptions = [
     { value: 'all', label: 'Tous les statuts' },
-    { value: 'pending', label: 'En attente' },
+    { value: 'pending', label: 'Abandonnées' },
     { value: 'processing', label: 'Payé' },
     { value: 'shipped', label: 'Expédié' },
     { value: 'delivered', label: 'Livré' },
@@ -256,7 +260,7 @@ export const AdminOrders: React.FC = () => {
     switch (status) {
       case 'pending':
         return {
-          text: 'En attente',
+          text: 'Abandonné',
           color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
           icon: Clock
         }
