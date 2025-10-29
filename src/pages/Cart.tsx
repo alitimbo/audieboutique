@@ -32,7 +32,7 @@ export const Cart: React.FC = () => {
 
   // Le prix de la livraison est maintenant calculé sur le sous-total du store
   const shipping = subtotal >= 80 ? 0 : 5.99
-  const total = shipping ? subtotal + shipping : subtotal
+  const total = isShipping ? subtotal + shipping : subtotal
 
   // Fonctions pour interagir avec le store
   const handleUpdateQuantity = (id: string, quantity: number) => {
@@ -84,7 +84,9 @@ export const Cart: React.FC = () => {
         user: isAuthenticated ? user?.id : null
       })
         */
+      
       if (user?.id) {
+
         const response = await CartServices.checkout(
           user.id,
           address,
@@ -98,10 +100,12 @@ export const Cart: React.FC = () => {
         if (response.success) {
           //Logique ouverture du checkout
           const data = response.data
+          console.log('Order created successfully:', data)
           const totalAmount = data.order_details.total
           await createCheckout(data.id, data.user_id, totalAmount)
         }
       }
+    
     } catch (error) {
       console.error('Checkout error:', error)
     } finally {

@@ -67,6 +67,30 @@ const categoryMap: Record<string, Omit<Category, 'name' | 'link'>> = {
     icon: <UserHeart className='w-8 h-8' />,
     color: 'from-red-500 to-red-600',
     description: 'Looks assortis'
+  },
+  Ensembles: {
+    id: 'ensembles',
+    icon: <Percent className='w-8 h-8' />,
+    color: 'from-pink-400 to-pink-600',
+    description: 'Ensemble coordonné'
+  },
+  'Chemises & tops': {
+    id: 'chemises-et-tops',
+    icon: <Shirt className='w-8 h-8' />,
+    color: 'from-yellow-400 to-yellow-600',
+    description: 'Chemises stylées'
+  },
+  Robes: {
+    id: 'robes',
+    icon: <Sparkles className='w-8 h-8' />,
+    color: 'from-purple-400 to-purple-600',
+    description: 'Robes élégantes'
+  },
+  Combinaisons: {
+    id: 'combinaisons',
+    icon: <Users className='w-8 h-8' />,
+    color: 'from-blue-400 to-blue-600',
+    description: 'Combinaisons tendance'
   }
 }
 

@@ -57,6 +57,14 @@ export const getOriginalCategoryNameWithSwitch = (
       return 'Bijoux'
     case 'en-couple':
       return 'En couple'
+    case 'ensembles':
+      return 'Ensembles'
+    case 'chemises-tops':
+      return 'Chemises & tops'
+    case 'robes':
+      return 'Robes'
+    case 'combinaisons':
+      return 'Combinaisons'
     default:
       return null
   }

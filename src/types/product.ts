@@ -63,12 +63,16 @@ export interface StockMovementDb {
 
 export const PRODUCT_CATEGORIES = [
   'Spécial Fêtes',
-  'Femmes',
+  //'Femmes',
   'Corsets & Gaines',
   'Maillots de bain',
   'Sacs & portes monnaies',
   'Bijoux',
-  'En couple'
+  'En couple',
+  'Ensembles',
+  'Chemises & tops',
+  'Robes',
+  'Combinaisons',
 ]
 
 export const PRODUCT_COLORS = [
@@ -82,7 +86,7 @@ export const PRODUCT_COLORS = [
   { name: 'Violet', value: '#8B5CF6' }
 ]
 
-export const PRODUCT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+export const PRODUCT_SIZES = ['Taille unique','XS', 'S', 'M', 'L', 'XL', 'XXL']
 
 export const PRODUCT_TAGS = [
   'Nouveautés',

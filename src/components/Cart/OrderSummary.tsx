@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Truck, Tag, Shield, CreditCard } from 'lucide-react'
+import { Truck, Tag, Shield, CreditCard, Store } from 'lucide-react'
 
 interface OrderSummaryProps {
   onShipping: (ship: boolean) => void
@@ -92,27 +92,44 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           Mode de livraison :
         </p>
         <div className='flex flex-col space-y-2'>
-          <label className='flex items-center space-x-2'>
+          <label
+            className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition ${
+              shippingMethod === 'delivery'
+                ? 'bg-red-100 border-2 border-red-500'
+                : 'bg-gray-50 border border-gray-300'
+            }`}
+          >
+            <Truck className='w-5 h-5 text-red-600' />
             <input
               type='radio'
               name='shippingMethod'
               value='delivery'
               checked={shippingMethod === 'delivery'}
               onChange={() => {
-                setShippingMethod('delivery'), onShipping(true)
+                setShippingMethod('delivery')
+                onShipping(true)
               }}
               className='accent-luxury-red'
             />
             <span>Se faire livrer</span>
           </label>
-          <label className='flex items-center space-x-2'>
+
+          <label
+            className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition ${
+              shippingMethod === 'pickup'
+                ? 'bg-green-100 border-2 border-green-500'
+                : 'bg-gray-50 border border-gray-300'
+            }`}
+          >
+            <Store className='w-5 h-5 text-green-600' />
             <input
               type='radio'
               name='shippingMethod'
               value='pickup'
               checked={shippingMethod === 'pickup'}
               onChange={() => {
-                setShippingMethod('pickup'), onShipping(false)
+                setShippingMethod('pickup')
+                onShipping(false)
               }}
               className='accent-luxury-red'
             />
