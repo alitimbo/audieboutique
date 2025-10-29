@@ -45,7 +45,7 @@ export interface ProductFormData {
 export interface ProductFilters {
   search: string
   category: string
-  status: 'all' | 'active' | 'archived' | 'out_of_stock'
+  status: 'all' | 'active' | 'archived' | 'out_of_stock' | 'down_of_stock'
   featured: boolean | null
   tag: string | null
 }

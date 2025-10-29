@@ -160,6 +160,9 @@ export const AdminCatalog: React.FC = () => {
         case 'out_of_stock':
           filtered = filtered.filter(product => product.stock === 0)
           break
+        case 'down_of_stock':
+          filtered = filtered.filter(product => product.stock <= 5)
+          break
       }
     }
 
@@ -465,6 +468,7 @@ export const AdminCatalog: React.FC = () => {
             <option value='all'>Tous les statuts</option>
             <option value='active'>Actifs</option>
             <option value='archived'>Archivés</option>
+            <option value='down_of_stock'>Faible stock</option>
             <option value='out_of_stock'>Rupture de stock</option>
           </select>
 

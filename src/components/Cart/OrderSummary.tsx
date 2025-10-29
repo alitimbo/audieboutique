@@ -111,7 +111,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               }}
               className='accent-luxury-red'
             />
-            <span>Se faire livrer</span>
+            <span>Se faire livrer (+5.99€)</span>
           </label>
 
           <label
