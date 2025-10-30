@@ -7,7 +7,7 @@ import { ProductInfo } from '../components/Product/ProductInfo'
 import { ProductTabs } from '../components/Product/ProductTabs'
 import { RelatedProducts } from '../components/Product/RelatedProducts'
 import { useProductStore } from '../store/useProductStore'
-import { Product } from '../types/product'
+import { Product } from '../types/newproduct'
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams()
@@ -19,7 +19,9 @@ export const ProductDetail: React.FC = () => {
       fetchProducts()
     } else {
       const foundProduct = products.find(p => p.id === id)
-      setProduct(foundProduct || null)
+      if (foundProduct) {
+        setProduct(foundProduct)
+      }
     }
   }, [id, products, fetchProducts])
 
@@ -46,7 +48,6 @@ export const ProductDetail: React.FC = () => {
       </div>
     )
   }
-
 
   const relatedProducts = products
     .filter(p => p.id !== product.id && p.category === product.category)
@@ -88,7 +89,9 @@ export const ProductDetail: React.FC = () => {
               Boutique
             </a>
             <span>/</span>
-            <span className='text-luxury-black font-medium'>Lingerie</span>
+            <span className='text-luxury-black font-medium'>
+              {product.name}
+            </span>
           </motion.nav>
 
           {/* Product Layout */}

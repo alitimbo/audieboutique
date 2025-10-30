@@ -231,58 +231,60 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         {/* Colors */}
-        <div className='mb-8'>
-          <button
-            onClick={() => setIsColorsOpen(!isColorsOpen)}
-            className='flex items-center justify-between w-full mb-4'
-          >
-            <h3 className='text-lg font-semibold text-luxury-black'>
-              Couleurs
-            </h3>
-            {isColorsOpen ? (
-              <ChevronUp className='w-4 h-4 text-luxury-gray-600' />
-            ) : (
-              <ChevronDown className='w-4 h-4 text-luxury-gray-600' />
-            )}
-          </button>
-          <AnimatePresence>
-            {isColorsOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-                className='overflow-hidden'
-              >
-                <div className='grid grid-cols-4 gap-3'>
-                  {PRODUCT_COLORS.map(color => (
-                    <motion.button
-                      key={color.value}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => handleFilterChange('color', color.name)}
-                      className={`relative w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                        selectedColor === color.name
-                          ? 'border-luxury-red scale-110'
-                          : 'border-luxury-gray-300'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
-                  {selectedColor && (
-                    <button
-                      onClick={() => handleFilterChange('color', '')}
-                      className='col-span-4 text-sm text-luxury-red hover:text-red-700 mt-2'
-                    >
-                      Effacer la sélection
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        {/*
+          <div className='mb-8'>
+            <button
+              onClick={() => setIsColorsOpen(!isColorsOpen)}
+              className='flex items-center justify-between w-full mb-4'
+            >
+              <h3 className='text-lg font-semibold text-luxury-black'>
+                Couleurs
+              </h3>
+              {isColorsOpen ? (
+                <ChevronUp className='w-4 h-4 text-luxury-gray-600' />
+              ) : (
+                <ChevronDown className='w-4 h-4 text-luxury-gray-600' />
+              )}
+            </button>
+            <AnimatePresence>
+              {isColorsOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className='overflow-hidden'
+                >
+                  <div className='grid grid-cols-4 gap-3'>
+                    {PRODUCT_COLORS.map(color => (
+                      <motion.button
+                        key={color.value}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleFilterChange('color', color.name)}
+                        className={`relative w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                          selectedColor === color.name
+                            ? 'border-luxury-red scale-110'
+                            : 'border-luxury-gray-300'
+                        }`}
+                        style={{ backgroundColor: color.value }}
+                        title={color.name}
+                      />
+                    ))}
+                    {selectedColor && (
+                      <button
+                        onClick={() => handleFilterChange('color', '')}
+                        className='col-span-4 text-sm text-luxury-red hover:text-red-700 mt-2'
+                      >
+                        Effacer la sélection
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        */}
       </div>
     </div>
   )

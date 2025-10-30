@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Minus, Plus, X, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useProductStore } from '../../store/useProductStore'
+import { Product } from '../../types/newproduct'
+import { useCartStore } from '../../store/useCartStore'
 
 export interface CartItemData {
   id: string
@@ -29,12 +32,24 @@ export const CartItem: React.FC<CartItemProps> = ({
   onRemove,
   onMoveToWishlist
 }) => {
+  const { products } = useProductStore()
+  const { updateCartItemVariant } = useCartStore()
+  const [productData, setProductData] = useState<Product | null>(null)
   //console.log(item)
   const subtotal = item.price * item.quantity
   const originalSubtotal = item.original_price
     ? item.original_price * item.quantity
     : null
   //console.log('Rendering CartItem:', item);
+
+  useEffect(() => {
+    const product = products.find(p => p.id === item.productId)
+    if (product) {
+      setProductData(product)
+    }
+  }, [products])
+
+  //console.log('Product data for CartItem:', productData)
 
   return (
     <motion.div
@@ -78,24 +93,63 @@ export const CartItem: React.FC<CartItemProps> = ({
           </div>
 
           {/* Variants */}
-          <div className='flex flex-wrap gap-4 mb-3 text-sm text-luxury-gray-600'>
-            {item.size && (
-              <span>
-                Taille:{' '}
-                <span className='font-medium text-luxury-black'>
-                  {item.size}
-                </span>
-              </span>
-            )}
-            {item.color && (
-              <span>
-                Couleur:{' '}
-                <span className='font-medium text-luxury-black'>
-                  {item.color}
-                </span>
-              </span>
-            )}
-          </div>
+          {productData?.variants && productData.variants.length > 0 && (
+            <div className='flex flex-col sm:flex-row gap-4 mb-3 text-sm text-luxury-gray-600'>
+              {/* Sélecteur de taille */}
+              <div>
+                <label className='mr-2 font-medium text-luxury-black'>
+                  Taille :
+                </label>
+                <select
+                  value={item.size || ''}
+                  onChange={e => {
+                    const selectedSize = e.target.value
+                    const colorsForSize =
+                      productData?.variants?.find(v => v.size === selectedSize)
+                        ?.colors || []
+                    const defaultColor =
+                      colorsForSize.length > 0
+                        ? colorsForSize[0].name
+                        : undefined
+                    updateCartItemVariant(item.id, selectedSize, defaultColor)
+                  }}
+                  className='border border-luxury-gray-200 rounded-lg px-2 py-1 focus:outline-none'
+                >
+                  <option value=''>Sélectionner</option>
+                  {productData?.variants?.map(variant => (
+                    <option key={variant.size} value={variant.size}>
+                      {variant.size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Sélecteur de couleur (lié à la taille) */}
+              {item.size && (
+                <div>
+                  <label className='mr-2 font-medium text-luxury-black'>
+                    Couleur :
+                  </label>
+                  <select
+                    value={item.color || ''}
+                    onChange={e =>
+                      updateCartItemVariant(item.id, item.size, e.target.value)
+                    }
+                    className='border border-luxury-gray-200 rounded-lg px-2 py-1 focus:outline-none'
+                  >
+                    <option value=''>Sélectionner</option>
+                    {productData?.variants
+                      .find(v => v.size === item.size)
+                      ?.colors.map(c => (
+                        <option key={c.name} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Price and Quantity */}
           <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>

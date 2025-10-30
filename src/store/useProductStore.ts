@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { ProductService } from '../services/productService'
-import { Product } from '../types/product'
+import { Product } from '../types/newproduct'
 
 interface ProductState {
   products: Product[]

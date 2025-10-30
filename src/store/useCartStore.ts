@@ -31,6 +31,7 @@ interface CartState {
   toggleCart: () => void
   openCart: () => void
   closeCart: () => void
+  updateCartItemVariant: (id: string, size?: string, color?: string) => void
 
   // Getters
   getTotalItems: () => number
@@ -137,6 +138,22 @@ export const useCartStore = create<CartState>()(
           items: updatedItems,
           total: get().calculateTotal(updatedItems)
         })
+      },
+      updateCartItemVariant: (id: string, size?: string, color?: string) => {
+        set(state => ({
+          items: state.items.map((item: CartItem) =>
+            item.id === id
+              ? { ...item, selectedSize: size, selectedColor: color }
+              : item
+          ),
+          total: get().calculateTotal(
+            state.items.map((item: CartItem) =>
+              item.id === id
+                ? { ...item, selectedSize: size, selectedColor: color }
+                : item
+            )
+          )
+        }))
       },
 
       clearCart: () => {

@@ -242,7 +242,7 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
                     {/* Champs du formulaire d'adresse ici */}
                     <div>
                       <label className='block text-sm font-medium text-luxury-gray-700 mb-2'>
-                        Nom complet
+                        Nom et prénom
                       </label>
                       <input
                         onChange={e =>
@@ -254,7 +254,7 @@ export const AuthSection: React.FC<AuthSectionProps> = ({
                         name='addressName'
                         type='text'
                         className='w-full border border-luxury-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-luxury-red focus:border-transparent'
-                        placeholder='Votre nom complet'
+                        placeholder='Votre nom et prénom'
                       />
                     </div>
                     <div>

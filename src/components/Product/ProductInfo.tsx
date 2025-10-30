@@ -1,56 +1,35 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Star,
-  Heart,
-  ShoppingCart,
-  Zap,
-  Truck,
-  Shield,
-  RotateCcw
-} from 'lucide-react'
+import { Heart, ShoppingCart, Truck, Shield, RotateCcw } from 'lucide-react'
 import { useCartStore } from '../../store/useCartStore'
 import { ProductService } from '../../services/productService'
 import { useProductStore } from '../../store/useProductStore'
 import { useAuthStore } from '../../store/useAuthStore'
 import { toast } from 'sonner'
+import { Product } from '../../types/newproduct'
 
-interface ProductInfoProps {
-  product: {
-    id: string
-    name: string
-    price: number
-    original_price?: number
-    category: string
-    tags: string[]
-    colors: { name: string; value: string }[]
-    sizes: string[]
-    description: string
-    stock: number
-  }
-}
-
-export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+export const ProductInfo: React.FC<{ product: Product }> = ({ product }) => {
   const { isAuthenticated, user } = useAuthStore()
   const { products } = useProductStore()
   const [allFavoris, setAllFavoris] = useState<any[]>([])
 
-  const [selectedColor, setSelectedColor] = useState({
-    name: product.colors[0]?.name || '',
-    value: product.colors[0]?.value || ''
-  })
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || '')
+  // === Gestion variantes ===
+  const [selectedSize, setSelectedSize] = useState(
+    product.variants[0]?.size || ''
+  )
+  const [selectedColor, setSelectedColor] = useState(
+    product.variants[0]?.colors[0] || { name: '', value: '' }
+  )
+
   const [quantity, setQuantity] = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
-
   const { addItem } = useCartStore()
 
+  // === Favoris ===
   const fetchUserFavoris = async () => {
     if (user) {
       const response = await ProductService.getFavorisByUserId(user.id)
-      if (response.length > 0) {
-        setAllFavoris(response)
-      }
+      if (response.length > 0) setAllFavoris(response)
     }
   }
 
@@ -58,14 +37,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     fetchUserFavoris()
   }, [])
 
-  const discountPercentage = product.original_price
-    ? Math.round(
-        ((product.original_price - product.price) / product.original_price) * 100
-      )
-    : 0
-
   const handleAddToCart = () => {
-    //console.log(selectedColor)
     addItem(product as any, quantity, {
       size: selectedSize,
       color: selectedColor?.name
@@ -75,11 +47,11 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   }
 
   const handleAddFavoris = async (productId: string) => {
-    const product = products.find(p => p.id === productId)
-    if (product && user) {
-      const response = await ProductService.addFavoris(user?.id, product)
+    const productItem = products.find(p => p.id === productId)
+    if (productItem && user) {
+      const response = await ProductService.addFavoris(user.id, productItem)
       setAllFavoris(prev => [...prev, response])
-      toast.success(`${product.name} ajouté au favoris`)
+      toast.success(`${productItem.name} ajouté aux favoris`)
     }
   }
 
@@ -91,13 +63,18 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     }
   }
 
-  const handleBuyNow = () => {
-    handleAddToCart()
-    // Redirect to checkout
-    window.location.href = '/checkout'
-  }
-
   const isFavoris = allFavoris.some(f => f.product.id === product.id)
+
+  const discountPercentage = product.original_price
+    ? Math.round(
+        ((product.original_price - product.price) / product.original_price) *
+          100
+      )
+    : 0
+
+  // === Trouver les couleurs pour la taille sélectionnée ===
+  const currentVariant = product.variants.find(v => v.size === selectedSize)
+  const availableColors = currentVariant?.colors || []
 
   return (
     <motion.div
@@ -106,7 +83,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
       transition={{ duration: 0.6, delay: 0.2 }}
       className='space-y-8'
     >
-      {/* Product Title & Badge */}
+      {/* --- Titre & catégorie --- */}
       <div>
         <motion.span
           initial={{ scale: 0 }}
@@ -125,35 +102,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         >
           {product.name}
         </motion.h1>
-
-        {/* Rating */}
-        {/*
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className='flex items-center space-x-4 mb-6'
-          >
-            <div className='flex items-center'>
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-5 h-5 ${
-                    i < Math.floor(product.rating)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-luxury-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className='text-luxury-gray-600'>
-              {product.rating} ({product.reviews} avis)
-            </span>
-          </motion.div>
-        */}
       </div>
 
-      {/* Price */}
+      {/* --- Prix --- */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -175,26 +126,56 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         )}
       </motion.div>
 
-      {/* Color Selection */}
-      {product.colors.length > 0 && (
+      {/* --- Sélection taille --- */}
+      {product.variants.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
           <h3 className='text-lg font-semibold text-luxury-black mb-4'>
-            Couleur:{' '}
-            {product.colors.find(c => c.value === selectedColor.value)?.name}
+            Taille : {selectedSize}
+          </h3>
+          <div className='flex flex-wrap gap-3'>
+            {product.variants.map(variant => (
+              <motion.button
+                key={variant.size}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setSelectedSize(variant.size)
+                  setSelectedColor(variant.colors[0] || { name: '', value: '' })
+                }}
+                className={`px-4 py-2 border-2 rounded-xl font-medium transition-all duration-200 ${
+                  selectedSize === variant.size
+                    ? 'border-luxury-red bg-luxury-red text-luxury-white'
+                    : 'border-luxury-gray-300 text-luxury-black hover:border-luxury-red'
+                }`}
+              >
+                {variant.size}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* --- Sélection couleur --- */}
+      {availableColors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        >
+          <h3 className='text-lg font-semibold text-luxury-black mb-4'>
+            Couleur : {selectedColor.name}
           </h3>
           <div className='flex space-x-3'>
-            {product.colors.map(color => (
+            {availableColors.map(color => (
               <motion.button
                 key={color.value}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() =>
-                  setSelectedColor({ name: color.name, value: color.value })
-                }
+                onClick={() => setSelectedColor(color)}
                 className={`w-12 h-12 rounded-full border-4 transition-all duration-200 ${
                   selectedColor.value === color.value
                     ? 'border-luxury-red shadow-lg'
@@ -212,37 +193,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         </motion.div>
       )}
 
-      {/* Size Selection */}
-      {product.sizes.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
-        >
-          <h3 className='text-lg font-semibold text-luxury-black mb-4'>
-            Taille: {selectedSize}
-          </h3>
-          <div className='flex flex-wrap gap-3'>
-            {product.sizes.map(size => (
-              <motion.button
-                key={size}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 border-2 rounded-xl font-medium transition-all duration-200 ${
-                  selectedSize === size
-                    ? 'border-luxury-red bg-luxury-red text-luxury-white'
-                    : 'border-luxury-gray-300 text-luxury-black hover:border-luxury-red'
-                }`}
-              >
-                {size}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Quantity */}
+      {/* --- Quantité --- */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -274,7 +225,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         </div>
       </motion.div>
 
-      {/* Action Buttons */}
+      {/* --- Boutons actions --- */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -324,21 +275,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
             </motion.button>
           )}
         </div>
-
-        {/*product.stock > 0 && (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleBuyNow}
-            className='w-full flex items-center justify-center space-x-2 py-4 bg-luxury-black text-luxury-white rounded-2xl font-semibold hover:bg-luxury-gray-900 transition-all duration-300'
-          >
-            <Zap className='w-5 h-5' />
-            <span>Acheter maintenant</span>
-          </motion.button>
-        )*/}
       </motion.div>
 
-      {/* Delivery Info */}
+      {/* --- Infos livraison --- */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

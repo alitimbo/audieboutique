@@ -30,6 +30,7 @@ export const Cart: React.FC = () => {
   const itemCount = cartStore.getTotalItems()
   const subtotal = cartStore.calculateTotal() // Appeler cette fonction pour obtenir le sous-total
 
+  //console.log('Cart items from Zustand store:', cartItems)
   // Le prix de la livraison est maintenant calculé sur le sous-total du store
   const shipping = subtotal >= 80 ? 0 : 5.99
   const total = isShipping ? subtotal + shipping : subtotal

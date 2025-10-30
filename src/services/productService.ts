@@ -4,7 +4,7 @@ import {
   ProductFormData,
   ProductFilters,
   StockMovementDb
-} from '../types/product'
+} from '../types/newproduct'
 
 export class ProductService {
   // Récupérer tous les produits avec filtres

@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Eye, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Product } from '../../types/product'
+import { Product } from '../../types/newproduct'
 import { useNavigate } from 'react-router-dom'
 
 interface RelatedProductsProps {
@@ -24,7 +24,7 @@ export const RelatedProducts: React.FC<RelatedProductsProps> = ({
     }
   }
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { y: 30, opacity: 0 },
     visible: {
       y: 0,

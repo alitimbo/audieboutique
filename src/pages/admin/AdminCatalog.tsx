@@ -15,15 +15,24 @@ import {
   ChevronLeft
 } from 'lucide-react'
 import { toast } from 'sonner'
+/*
 import {
   Product,
   ProductFormData,
   ProductFilters,
   PRODUCT_CATEGORIES
 } from '../../types/product'
+ */
 import { ProductForm } from '../../components/admin/ProductForm'
 import { StockManager } from '../../components/admin/StockManager'
 import { ProductService } from '../../services/productService'
+import {
+  Product,
+  ProductFormData,
+  ProductFilters,
+  PRODUCT_CATEGORIES
+} from '../../types/newproduct'
+import { NewProductForm } from '../../components/admin/NewProductForm'
 
 // Les données sont maintenant chargées depuis Supabase via ProductService
 
@@ -106,8 +115,8 @@ export const AdminCatalog: React.FC = () => {
       const data = await ProductService.getProducts()
       console.log('📦 Produits chargés:', data)
 
-      setProducts(data)
-      setFilteredProducts(data)
+      setProducts(data as any)
+      setFilteredProducts(data as any)
 
       console.log('✅ État mis à jour avec', data.length, 'produits')
     } catch (error) {
@@ -237,11 +246,11 @@ export const AdminCatalog: React.FC = () => {
       if (formMode === 'create') {
         await ProductService.createProduct(productData)
         console.log(productData)
-        toast.success('Produit créé avec succès')
+        //toast.success('Produit créé avec succès')
         await loadProducts() // Recharger la liste
       } else if (selectedProduct) {
         await ProductService.updateProduct(selectedProduct.id, productData)
-        toast.success('Produit modifié avec succès')
+        //toast.success('Produit modifié avec succès')
         await loadProducts() // Recharger la liste
       }
     } catch (error) {
@@ -761,7 +770,7 @@ export const AdminCatalog: React.FC = () => {
       </div>
 
       {/* Product Form Modal */}
-      <ProductForm
+      <NewProductForm
         product={selectedProduct}
         isOpen={isProductFormOpen}
         onClose={() => {
@@ -771,6 +780,18 @@ export const AdminCatalog: React.FC = () => {
         onSave={handleSaveProduct}
         mode={formMode}
       />
+      {/*
+        <ProductForm
+          product={selectedProduct}
+          isOpen={isProductFormOpen}
+          onClose={() => {
+            setIsProductFormOpen(false)
+            saveModalState(false, 'create')
+          }}
+          onSave={handleSaveProduct}
+          mode={formMode}
+        />
+      */}
 
       {/* Stock Manager Modal */}
       {selectedProduct && (
