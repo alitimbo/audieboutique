@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
-import { Product } from '../../types/product' // Assurez-vous que ce chemin est correct
+import { Product } from '../../types/newproduct' // Assurez-vous que ce chemin est correct
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../../store/useCartStore'
 import { toast } from 'sonner'
@@ -56,9 +56,9 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   const handleAddToCart = (productId: string) => {
     const product = products.find(p => p.id === productId)
     if (product) {
-      addItem(product, 1, {
-        size: product.sizes ? product.sizes[0] : "",
-        color: product.colors ? product.colors[0]?.name : ""
+      addItem(product as any, 1, {
+        size: '',
+        color: ''
       })
       toast.success(`${product.name} ajouté au panier`)
     }

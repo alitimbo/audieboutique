@@ -1,4 +1,4 @@
-import { Product } from '../types/product' // Assurez-vous que le chemin est correct
+import { Product } from '../types/newproduct' // Assurez-vous que le chemin est correct
 
 /**
  * Filtre un tableau de produits par nom.
@@ -110,7 +110,7 @@ export const filterProductsByColor = (
   if (!selectedColor || selectedColor.trim() === '') {
     return products
   }
-
+  
   return products.filter(product => {
     try {
       // Vérifie si product.colors est déjà un tableau ou une string JSON

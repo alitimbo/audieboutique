@@ -445,6 +445,7 @@ export const Account: React.FC = () => {
     if (successCheckout && successCheckout === 'true') {
       clearCart()
 
+      /*
       const adminHtml = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <h2 style="color:#416A4A;">Nouvelle commande reçue</h2>
@@ -462,11 +463,14 @@ export const Account: React.FC = () => {
         </div>
         `
       await sendEmail('Nouvelle commande', adminEmail, adminHtml, [])
+      */
       toast.success('Votre commande a bien été effectué')
+      /*
       setTimeout(
         () => (window.location.href = `${window.location.origin}/account`),
         2000
       )
+        */
     }
   }
 
